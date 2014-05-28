@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SeHacWebServer.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -11,26 +12,32 @@ namespace SeHacWebServer
     public abstract class HttpServer
     {
 
-        //protected int port;
+        protected int port;
         bool is_active = true;
-        TcpListener_notused listener;
-        SettingsParser parser;
-        List<KeyValuePair<string, string>> settings;
+        TcpListener listener;
+        SettingsModel settings;
 
-        public HttpServer()
+        public HttpServer(int port)
         {
-            parser = new SettingsParser();
-            settings = new List<KeyValuePair<string, string>>();
+            this.port = port;
+            settings = XMLParser.DeserializeXML();
         }
 
-        public void listen()
+        public void StartServer()
         {
-            //listener = new TcpListener(int.Parse(settings.ElementAt(1).Value));
-            listener = new TcpListener_notused(3030);
+            Console.WriteLine("Server starting on port: " + settings.webPort);
+            Thread thread = new Thread(new ThreadStart(Listen));
+            thread.Start();
+        }
+
+        public void Listen()
+        {
+            listener = new TcpListener(port);
+            listener.Start();
             while (is_active)
             {
-                /*TcpClient s = listener.AcceptTcpClient();
-                HttpProcessor processor = new HttpProcessor(s, this);
+                TcpClient s = listener.AcceptTcpClient();
+                /*HttpProcessor processor = new HttpProcessor(s, this);
                 Thread thread = new Thread(new ThreadStart(processor.process));
                 thread.Start();
                 Thread.Sleep(1);*/

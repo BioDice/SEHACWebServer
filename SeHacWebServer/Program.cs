@@ -12,8 +12,7 @@ namespace SeHacWebServer
         static void Main(string[] args)
         {
             HttpServer httpServer = new HttpManager(8080);
-            Thread thread = new Thread(new ThreadStart(httpServer.listen));
-            thread.Start();
+            httpServer.StartServer();
         }
     }
 }
