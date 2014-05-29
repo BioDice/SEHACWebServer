@@ -25,13 +25,8 @@ namespace SeHacWebServer
             XmlSerializer SerializerObj = new XmlSerializer(typeof(SettingsModel));
             string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
             FileStream ReadFileStream = new FileStream(root + "/settings.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
-            // Load the object saved above by using the Deserialize function
             SettingsModel LoadedObj = (SettingsModel)SerializerObj.Deserialize(ReadFileStream);
-            // Cleanup
             ReadFileStream.Close();
-
-            /*foreach (string Setting in LoadedObj.Settings)
-                MessageBox.Show(Setting);*/
 
             return LoadedObj;
         }

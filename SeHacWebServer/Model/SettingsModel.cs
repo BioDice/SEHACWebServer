@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace SeHacWebServer.Model
 {
     [Serializable]
-    [XmlRoot[""]]
+    [XmlRoot("serverSettings")]
     public class SettingsModel
     {
         public int webPort { get; set; }

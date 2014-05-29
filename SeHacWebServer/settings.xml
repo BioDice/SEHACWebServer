@@ -1,9 +1,8 @@
-<httpserver>
-	<settings>
-		<webPort>8080</webPort>
-		<controlPort>8081</controlPort>
-		<webRoot>C://webserver</webRoot>
-		<defaultPage>index.html</defaultPage>
-		<dirListing>true</dirListing>
-	</settings>
-</httpserver>
+<?xml version="1.0"?>
+<serverSettings>
+	<webPort>8080</webPort>
+	<controlPort>8081</controlPort>
+	<webRoot>C://webserver</webRoot>
+	<defaultPage>index.html</defaultPage>
+	<dirListing>true</dirListing>
+</serverSettings>

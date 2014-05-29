@@ -1,7 +1,9 @@
 ﻿using SeHacWebServer.Model;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -11,11 +13,11 @@ namespace SeHacWebServer
 {
     public abstract class HttpServer
     {
-
         protected int port;
-        bool is_active = true;
-        TcpListener listener;
-        SettingsModel settings;
+        private bool is_active = true;
+        private TcpListener listener;
+        private SettingsModel settings;
+        private Thread thread;
 
         public HttpServer(int port)
         {
@@ -25,8 +27,8 @@ namespace SeHacWebServer
 
         public void StartServer()
         {
-            Console.WriteLine("Server starting on port: " + settings.webPort);
-            Thread thread = new Thread(new ThreadStart(Listen));
+            Console.WriteLine("Server listening on port: " + settings.webPort);
+            thread = new Thread(new ThreadStart(Listen));
             thread.Start();
         }
 
@@ -36,12 +38,22 @@ namespace SeHacWebServer
             listener.Start();
             while (is_active)
             {
-                TcpClient s = listener.AcceptTcpClient();
-                /*HttpProcessor processor = new HttpProcessor(s, this);
-                Thread thread = new Thread(new ThreadStart(processor.process));
-                thread.Start();
-                Thread.Sleep(1);*/
+                Console.WriteLine("Waiting for connection...");
+                TcpClient client = listener.AcceptTcpClient();
+                RequestHandler newRequest = new RequestHandler(client,this);
+                Thread Thread = new Thread(new ThreadStart(newRequest.Process));
+                Thread.Name = "HTTP Request";
+                Thread.Start();
             }
         }
+
+        public void StopServer()
+        {
+            listener.Stop();
+            thread.Abort();
+        }
+
+        public abstract void handleGETRequest(RequestHandler p);
+        public abstract void handlePOSTRequest(RequestHandler p, StreamReader inputData);
     } 
 }
