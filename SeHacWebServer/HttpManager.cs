@@ -1,39 +1,59 @@
-﻿using System;
+﻿using SeHacWebServer.Model;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Sockets;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SeHacWebServer
 {
-    class HttpManager : HttpServer
+    public abstract class HttpManager
     {
-        public HttpManager(int port) : base(port)
+        protected int port;
+        private bool is_active = true;
+        private TcpListener listener;
+        public SettingsModel settings { get; set; }
+        private Thread thread;
+
+        public HttpManager(int port)
         {
-
+            this.port = port;
+            
         }
 
-        public override void handleGETRequest(RequestHandler p) {
-            Console.WriteLine("request: {0}", p.http_url);
-            p.writeSuccess();
-            p.outputStream.WriteLine("<html><body><h1>test server</h1>");
-            p.outputStream.WriteLine("Current Time: " + DateTime.Now.ToString());
-            p.outputStream.WriteLine("url : {0}", p.http_url);
-        
-            p.outputStream.WriteLine("<form method=post action=/form>");
-            p.outputStream.WriteLine("<input type=text name=foo value=foovalue>");
-            p.outputStream.WriteLine("<input type=submit name=bar value=barvalue>");
-            p.outputStream.WriteLine("</form></body></html>");
+        public void StartServer()
+        {
+            Console.WriteLine("Server listening on port: " + port);
+            thread = new Thread(new ThreadStart(Listen));
+            thread.Start();
         }
-    
-        public override void handlePOSTRequest(RequestHandler p, StreamReader inputData) {
-            Console.WriteLine("POST request: {0}", p.http_url);
-            string data = inputData.ReadToEnd();
-        
-            p.outputStream.WriteLine("<html><body><h1>test server</h1>");
-            p.outputStream.WriteLine("<a href=/test>return</a><p>");
-            p.outputStream.WriteLine("postbody: <pre>{0}</pre>", data);
+
+        public void Listen()
+        {
+            listener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
+            listener.Start();
+            while (is_active)
+            {
+                Console.WriteLine("Waiting for connection...");
+                TcpClient client = listener.AcceptTcpClient();
+                RequestHandler newRequest = new RequestHandler(client,this);
+                Thread Thread = new Thread(new ThreadStart(newRequest.Process));
+                Thread.Name = "HTTP Request";
+                Thread.Start();
+            }
         }
-    }
+
+        public void StopServer()
+        {
+            listener.Stop();
+            thread.Abort();
+        }
+
+        public abstract void handleGETRequest(RequestHandler p, string url);
+        public abstract void handlePOSTRequest(RequestHandler p, StreamReader inputData);
+    } 
 }

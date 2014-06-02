@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,11 +13,11 @@ namespace SeHacWebServer
 {
     public class RequestHandler
     {
-        public TcpClient socket;        
-        public HttpServer srv;
+        public TcpClient socket;
+        public HttpManager srv;
 
-        private Stream inputStream;
-        public StreamWriter outputStream;
+        public NetworkStream stream;
+        //public StreamWriter outputStream;
 
         public String http_method;
         public String http_url;
@@ -24,7 +25,7 @@ namespace SeHacWebServer
         public Hashtable httpHeaders = new Hashtable();
         private static int MAX_POST_SIZE = 10 * 1024 * 1024;
 
-        public RequestHandler(TcpClient client, HttpServer server)
+        public RequestHandler(TcpClient client, HttpManager server)
         {
             this.socket = client;
             this.srv = server;
@@ -32,8 +33,8 @@ namespace SeHacWebServer
 
         public void Process()
         {
-            inputStream = new BufferedStream(socket.GetStream());
-            outputStream = new StreamWriter(new BufferedStream(socket.GetStream()));
+            stream = socket.GetStream();
+            //outputStream = new StreamWriter(new BufferedStream(socket.GetStream()));
 
             try
             {
@@ -51,16 +52,15 @@ namespace SeHacWebServer
             catch (Exception e)
             {
                 Console.WriteLine("Exception: " + e.ToString());
-                writeFailure();
             }
-            outputStream.Flush();
-            inputStream = null; outputStream = null;            
+            stream.Flush();
+            stream = null;
             socket.Close();
         }
 
         public void handleGETRequest()
         {
-            srv.handleGETRequest(this);
+            srv.handleGETRequest(this, http_url);
         }
 
         private string streamReadLine(Stream inputStream)
@@ -72,7 +72,7 @@ namespace SeHacWebServer
                 next_char = inputStream.ReadByte();
                 if (next_char == '\n') { break; }
                 if (next_char == '\r') { continue; }
-                if (next_char == -1) { Thread.Sleep(1); continue; };
+                //if (next_char == -1) { Thread.Sleep(1); continue; };
                 data += Convert.ToChar(next_char);
             }
             return data;
@@ -80,7 +80,7 @@ namespace SeHacWebServer
 
         public void parseRequest()
         {
-            String request = streamReadLine(inputStream);
+            String request = streamReadLine(stream);
             string[] tokens = request.Split(' ');
             if (tokens.Length != 3)
             {
@@ -95,9 +95,9 @@ namespace SeHacWebServer
 
         public void readHeaders()
         {
-            Console.WriteLine("readHeaders()");
+            Console.WriteLine("Reading headers...");
             String line;
-            while ((line = streamReadLine(inputStream)) != null)
+            while ((line = streamReadLine(stream)) != null)
             {
                 if (line.Equals(""))
                 {
@@ -144,7 +144,7 @@ namespace SeHacWebServer
                 {
                     Console.WriteLine("starting Read, to_read={0}", to_read);
 
-                    int numread = this.inputStream.Read(buf, 0, Math.Min(BUF_SIZE, to_read));
+                    int numread = this.stream.Read(buf, 0, Math.Min(BUF_SIZE, to_read));
                     Console.WriteLine("read finished, numread={0}", numread);
                     if (numread == 0)
                     {
@@ -167,19 +167,18 @@ namespace SeHacWebServer
 
         }
 
-        public void writeSuccess(string content_type = "text/html")
+        public void SendHeader(HttpHeaderModel header)
         {
-            outputStream.WriteLine("HTTP/1.0 200 OK");
-            outputStream.WriteLine("Content-Type: " + content_type);
-            outputStream.WriteLine("Connection: close");
-            outputStream.WriteLine("");
-        }
-
-        public void writeFailure()
-        {
-            outputStream.WriteLine("HTTP/1.0 404 File not found");
-            outputStream.WriteLine("Connection: close");
-            outputStream.WriteLine("");
+            string sBuffer = "";
+            sBuffer = sBuffer + header.Protocol + " " + header.ResponseCode + "\r\n";
+            //sBuffer = sBuffer + "Server: cx1193719-b\r\n";
+            sBuffer = sBuffer + "Content-Type: " + header.ContentType + "\r\n";
+            //sBuffer = sBuffer + "Accept-Ranges: bytes\r\n";
+            sBuffer = sBuffer + "Content-Length: " + header.ContentLength + "\r\n";
+            //sBuffer = sBuffer + "Host: "+header.Host+"\r\n";
+            sBuffer = sBuffer + "Connection: close \r\n\r\n";
+            stream.Write(Encoding.ASCII.GetBytes(sBuffer), 0, sBuffer.Length);
+            stream.Flush();
         }
     }
 }

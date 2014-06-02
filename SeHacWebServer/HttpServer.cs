@@ -3,57 +3,86 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace SeHacWebServer
 {
-    public abstract class HttpServer
+    public class HttpServer : HttpManager
     {
-        protected int port;
-        private bool is_active = true;
-        private TcpListener listener;
-        private SettingsModel settings;
-        private Thread thread;
-
-        public HttpServer(int port)
+        public HttpServer(int port) : base(port)
         {
-            this.port = port;
-            settings = XMLParser.DeserializeXML();
+
         }
 
-        public void StartServer()
+        public override void handleGETRequest(RequestHandler p, string url) 
         {
-            Console.WriteLine("Server listening on port: " + settings.webPort);
-            thread = new Thread(new ThreadStart(Listen));
-            thread.Start();
-        }
-
-        public void Listen()
-        {
-            listener = new TcpListener(port);
-            listener.Start();
-            while (is_active)
+            HttpHeaderModel header = new HttpHeaderModel();
+            try
             {
-                Console.WriteLine("Waiting for connection...");
-                TcpClient client = listener.AcceptTcpClient();
-                RequestHandler newRequest = new RequestHandler(client,this);
-                Thread Thread = new Thread(new ThreadStart(newRequest.Process));
-                Thread.Name = "HTTP Request";
-                Thread.Start();
+                string sResponse = "";
+                int iTotBytes = 0;
+                string path = "";
+                if (url == "/")
+                    path = settings.webRoot + "/" + settings.defaultPage;
+                else
+                    path = settings.webRoot + url;
+                FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+                // Create a reader that can read bytes from the FileStream.
+
+
+                BinaryReader reader = new BinaryReader(fs);
+                byte[] bytes = new byte[fs.Length];
+                int read;
+                while ((read = reader.Read(bytes, 0, bytes.Length)) != 0)
+                {
+                    // Read from the file and write the data to the network
+                    sResponse = sResponse + Encoding.ASCII.GetString(bytes, 0, read);
+
+                    iTotBytes = iTotBytes + read;
+
+                }
+                reader.Close();
+                fs.Close();
+
+                header.ContentLength = bytes.Length;
+                header.ContentType = "text/html";
+                header.Protocol = "HTTP/1.1";
+                header.ResponseCode = "200 OK";
+
+                p.SendHeader(header);
+
+                p.stream.Write(bytes, 0, bytes.Length);
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine("File not Found");
+                Send404(p);
             }
         }
-
-        public void StopServer()
-        {
-            listener.Stop();
-            thread.Abort();
+    
+        public override void handlePOSTRequest(RequestHandler p, StreamReader inputData) {
+            /*Console.WriteLine("POST request: {0}", p.http_url);
+            p.writeSuccess();
+            string data = inputData.ReadToEnd();
+            string content = "";
+            content += "<html><body><h1>test server</h1>";
+            content += "<a href=/test>return</a><p>";
+            content += "postbody: <pre>"+data+"</pre>";
+            content += "</p></body></html>";*/
+            //p.outputStream.WriteLine(content);
         }
 
-        public abstract void handleGETRequest(RequestHandler p);
-        public abstract void handlePOSTRequest(RequestHandler p, StreamReader inputData);
-    } 
+        public void Send404(RequestHandler p)
+        {
+            HttpHeaderModel header = new HttpHeaderModel();
+            string content = "<html><head><title>404 Not Found</title></head><body><h1>404 - Page Not Found</body></html>";
+            byte[] response = Encoding.ASCII.GetBytes(content);
+            header.Protocol = "HTTP/1.1";
+            header.ResponseCode = "404 Not Found";
+            header.ContentLength = response.Length;
+            p.SendHeader(header);
+            p.stream.Write(response, 0, response.Length);
+        }
+    }
 }

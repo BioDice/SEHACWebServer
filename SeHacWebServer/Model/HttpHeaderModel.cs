@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SeHacWebServer
 {
-    class HttpHeaderModel
+    public class HttpHeaderModel
     {
         public int ContentLength { get; set; }
         public string ContentType { get; set; }
