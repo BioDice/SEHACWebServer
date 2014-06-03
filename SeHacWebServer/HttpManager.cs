@@ -18,6 +18,7 @@ namespace SeHacWebServer
         private TcpListener listener;
         public SettingsModel settings { get; set; }
         private Thread thread;
+        protected string serverName { get; set; }
 
         public HttpManager(int port)
         {
@@ -27,7 +28,7 @@ namespace SeHacWebServer
 
         public void StartServer()
         {
-            Console.WriteLine("Server listening on port: " + port);
+            Console.WriteLine(serverName + " listening on port: " + port);
             thread = new Thread(new ThreadStart(Listen));
             thread.Start();
         }

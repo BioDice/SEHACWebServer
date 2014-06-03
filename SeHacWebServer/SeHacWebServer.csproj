@@ -42,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ControlServer.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Model\DirectoryListing.cs" />
     <Compile Include="Model\HttpHeaderModel.cs" />
     <Compile Include="HttpManager.cs" />
     <Compile Include="Model\SettingsModel.cs" />

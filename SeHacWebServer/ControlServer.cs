@@ -11,7 +11,7 @@ namespace SeHacWebServer
         public ControlServer(int port)
             : base(port)
         {
-
+            serverName = "ControlServer";
         }
 
         public override void handleGETRequest(RequestHandler p, string url)

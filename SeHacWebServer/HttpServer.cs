@@ -12,47 +12,37 @@ namespace SeHacWebServer
     {
         public HttpServer(int port) : base(port)
         {
-
+            serverName = "HttpServer";
         }
 
         public override void handleGETRequest(RequestHandler p, string url) 
         {
-            HttpHeaderModel header = new HttpHeaderModel();
             try
             {
-                string sResponse = "";
-                int iTotBytes = 0;
-                string path = "";
+                string path = settings.webRoot + url;
                 if (url == "/")
-                    path = settings.webRoot + "/" + settings.defaultPage;
-                else
-                    path = settings.webRoot + url;
-                FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                // Create a reader that can read bytes from the FileStream.
-
-
-                BinaryReader reader = new BinaryReader(fs);
-                byte[] bytes = new byte[fs.Length];
-                int read;
-                while ((read = reader.Read(bytes, 0, bytes.Length)) != 0)
                 {
-                    // Read from the file and write the data to the network
-                    sResponse = sResponse + Encoding.ASCII.GetString(bytes, 0, read);
-
-                    iTotBytes = iTotBytes + read;
-
+                    path = settings.webRoot + "/" + settings.defaultPage;
+                    WriteFile(p, path);
                 }
-                reader.Close();
-                fs.Close();
-
-                header.ContentLength = bytes.Length;
-                header.ContentType = "text/html";
-                header.Protocol = "HTTP/1.1";
-                header.ResponseCode = "200 OK";
-
-                p.SendHeader(header);
-
-                p.stream.Write(bytes, 0, bytes.Length);
+                else if (File.Exists(path))
+                {
+                    WriteFile(p, path);
+                }
+                else if (Directory.Exists(path))
+                {
+                    if (Boolean.Parse(settings.dirListing))
+                    {
+                        string dirListing = "<html><head><title>Directory list</title></head><body>";
+                        dirListing += DirectoryListing.Generate(path, settings.webRoot);
+                        dirListing += "</body></html>";
+                        SendDirectories(p, dirListing);
+                    }
+                    else
+                    {
+                        Send404(p);
+                    }
+                }
             }
             catch (IOException ex)
             {
@@ -71,6 +61,45 @@ namespace SeHacWebServer
             content += "postbody: <pre>"+data+"</pre>";
             content += "</p></body></html>";*/
             //p.outputStream.WriteLine(content);
+        }
+
+        public void WriteFile(RequestHandler p, string path)
+        {
+            HttpHeaderModel header = new HttpHeaderModel();
+            string sResponse = "";
+            int iTotBytes = 0;
+            FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            BinaryReader reader = new BinaryReader(fs);
+            byte[] bytes = new byte[fs.Length];
+            int read;
+            while ((read = reader.Read(bytes, 0, bytes.Length)) != 0)
+            {
+                sResponse = sResponse + Encoding.ASCII.GetString(bytes, 0, read);
+                iTotBytes = iTotBytes + read;
+            }
+            reader.Close();
+            fs.Close();
+
+            header.ContentLength = bytes.Length;
+            header.ContentType = "text/html";
+            header.Protocol = "HTTP/1.1";
+            header.ResponseCode = "200 OK";
+
+            p.SendHeader(header);
+
+            p.stream.Write(bytes, 0, bytes.Length);
+        }
+
+        public void SendDirectories(RequestHandler p, string dirs)
+        {
+            HttpHeaderModel header = new HttpHeaderModel();
+            byte[] response = Encoding.ASCII.GetBytes(dirs);
+            header.ContentLength = response.Length;
+            header.ContentType = "text/html";
+            header.Protocol = "HTTP/1.1";
+            header.ResponseCode = "200 OK";
+            p.SendHeader(header);
+            p.stream.Write(response, 0, response.Length);
         }
 
         public void Send404(RequestHandler p)
