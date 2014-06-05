@@ -23,11 +23,11 @@ namespace SeHacWebServer
                 if (url == "/")
                 {
                     path = settings.webRoot + "/" + settings.defaultPage;
-                    WriteFile(p, path);
+                    WritePost(p, path);
                 }
                 else if (File.Exists(path))
                 {
-                    WriteFile(p, path);
+                    WritePost(p, path);
                 }
                 else if (Directory.Exists(path))
                 {
@@ -43,6 +43,7 @@ namespace SeHacWebServer
                         Send404(p);
                     }
                 }
+
             }
             catch (IOException ex)
             {
@@ -63,7 +64,7 @@ namespace SeHacWebServer
             //p.outputStream.WriteLine(content);
         }
 
-        public void WriteFile(RequestHandler p, string path)
+        public void WritePost(RequestHandler p, string path)
         {
             HttpHeaderModel header = new HttpHeaderModel();
             string sResponse = "";

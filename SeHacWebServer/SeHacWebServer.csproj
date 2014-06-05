@@ -52,7 +52,7 @@
     <Compile Include="RequestHandler.cs" />
     <Compile Include="HttpServer.cs" />
     <Compile Include="ResponseStatus.cs" />
-    <Compile Include="XMLParser.cs" />
+    <Compile Include="Model\XMLParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

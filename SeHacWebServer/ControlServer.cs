@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,22 +16,51 @@ namespace SeHacWebServer
         }
 
         public override void handleGETRequest(RequestHandler p, string url)
-        {/*
-            Console.WriteLine("request: {0}", p.http_url);
-            p.writeSuccess();
-            p.outputStream.WriteLine("<html><body><h1>test server</h1>");
-            p.outputStream.WriteLine("Current Time: " + DateTime.Now.ToString());
-            p.outputStream.WriteLine("url : {0}", p.http_url);
+        {
+            try
+            {
+                string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
+                string path = root + @"/controlserver_files/main.html";
+                WritePost(p, path);
 
-            p.outputStream.WriteLine("<form method=post action=/form>");
-            p.outputStream.WriteLine("<input type=text name=foo value=foovalue>");
-            p.outputStream.WriteLine("<input type=submit name=bar value=barvalue>");
-            p.outputStream.WriteLine("</form></body></html>");*/
+            }
+            catch (IOException ex)
+            {
+                Console.WriteLine("File not Found");
+                //Send404(p);
+            }
         }
 
         public override void handlePOSTRequest(RequestHandler p, System.IO.StreamReader inputData)
         {
             throw new NotImplementedException();
+        }
+
+        public void WritePost(RequestHandler p, string path)
+        {
+            HttpHeaderModel header = new HttpHeaderModel();
+            string sResponse = "";
+            int iTotBytes = 0;
+            FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+            BinaryReader reader = new BinaryReader(fs);
+            byte[] bytes = new byte[fs.Length];
+            int read;
+            while ((read = reader.Read(bytes, 0, bytes.Length)) != 0)
+            {
+                sResponse = sResponse + Encoding.ASCII.GetString(bytes, 0, read);
+                iTotBytes = iTotBytes + read;
+            }
+            reader.Close();
+            fs.Close();
+
+            header.ContentLength = bytes.Length;
+            header.ContentType = "text/html";
+            header.Protocol = "HTTP/1.1";
+            header.ResponseCode = "200 OK";
+
+            p.SendHeader(header);
+
+            p.stream.Write(bytes, 0, bytes.Length);
         }
     }
 }

@@ -1,0 +1,47 @@
+<html>
+<head>
+	<title>Control Server</title>
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script>
+	$( document ).ready(function() {
+		$("#submit").click(function (event) {
+			event.preventDefault();
+		});
+	});
+	</script>
+</head>
+<body>
+	<form method="post" action="#" id="frmControlPanel">
+		<table style="background-color: #FFFFDD;" border="1">
+			<tr style="background-color: #D3D3D3;">
+				<td style="font-weight: bold;">SehacWebServer</td>
+				<td style="font-weight: bold;">Control Panel</td>
+			</tr>
+			<tr>
+				<td>Web port:</td>
+				<td><input type="text" name="txtWebPort" /></td>
+			</tr>
+			<tr>
+				<td>Control port:</td>
+				<td><input type="text" name="txtControlPort" /></td>
+			</tr>
+			<tr>
+				<td>Webroot:</td>
+				<td><input type="text" name="txtWebRoot" /></td>
+			</tr>
+			<tr>
+				<td>Default page:</td>
+				<td><input type="text" name="txtDefaultPage" /></td>
+			</tr>
+			<tr>
+				<td>Directory browsing:</td>
+				<td><input type="check" name="chkDirlisting" /></td>
+			</tr>
+			<tr>
+				<td><input type="button" id="showLog" name="showLog" value="Show Log"></td>
+				<td><input type="submit" id="submit" name="submit" value="OK" /></td>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>
