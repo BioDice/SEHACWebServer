@@ -3,12 +3,13 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SeHacWebServer
 {
-    public class HttpServer : HttpManager
+    public class HttpServer : Server
     {
         public HttpServer(int port) : base(port)
         {
@@ -51,8 +52,14 @@ namespace SeHacWebServer
                 Send404(p);
             }
         }
+
+        public override Stream GetStream(TcpClient client)
+        {
+            return client.GetStream();
+        }
     
-        public override void handlePOSTRequest(RequestHandler p, StreamReader inputData) {
+        public override void handlePOSTRequest(RequestHandler p, StreamReader inputData) 
+        {
             /*Console.WriteLine("POST request: {0}", p.http_url);
             p.writeSuccess();
             string data = inputData.ReadToEnd();
@@ -60,8 +67,8 @@ namespace SeHacWebServer
             content += "<html><body><h1>test server</h1>";
             content += "<a href=/test>return</a><p>";
             content += "postbody: <pre>"+data+"</pre>";
-            content += "</p></body></html>";*/
-            //p.outputStream.WriteLine(content);
+            content += "</p></body></html>";
+            p.outputStream.WriteLine(content);*/
         }
 
         public void WritePost(RequestHandler p, string path)

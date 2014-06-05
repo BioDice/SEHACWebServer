@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SeHacWebServer
 {
-    public abstract class HttpManager
+    public abstract class Server
     {
         protected int port;
         private bool is_active = true;
@@ -20,7 +20,7 @@ namespace SeHacWebServer
         private Thread thread;
         protected string serverName { get; set; }
 
-        public HttpManager(int port)
+        public Server(int port)
         {
             this.port = port;
             
@@ -41,7 +41,10 @@ namespace SeHacWebServer
             {
                 Console.WriteLine("Waiting for connection...");
                 TcpClient client = listener.AcceptTcpClient();
-                RequestHandler newRequest = new RequestHandler(client,this);
+                
+                Stream stream = GetStream(client); // http stream
+
+                RequestHandler newRequest = new RequestHandler(this, stream);
                 Thread Thread = new Thread(new ThreadStart(newRequest.Process));
                 Thread.Name = "HTTP Request";
                 Thread.Start();
@@ -53,6 +56,8 @@ namespace SeHacWebServer
             listener.Stop();
             thread.Abort();
         }
+
+        public abstract Stream GetStream(TcpClient client);
 
         public abstract void handleGETRequest(RequestHandler p, string url);
         public abstract void handlePOSTRequest(RequestHandler p, StreamReader inputData);

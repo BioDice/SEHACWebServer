@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Security;
+using System.Net.Sockets;
+using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SeHacWebServer
 {
-    class ControlServer : HttpManager
+    class ControlServer : Server
     {
         public ControlServer(int port)
             : base(port)
@@ -31,9 +35,31 @@ namespace SeHacWebServer
             }
         }
 
+        public override Stream GetStream(TcpClient client)
+        {
+            SslStream stream = new SslStream(client.GetStream(), false);
+
+            X509Certificate certificate = new X509Certificate("Certificate\\Certificate.pfx", "KTYy77216");
+            stream.AuthenticateAsServer(certificate, false, SslProtocols.Ssl3, false);
+
+            return stream;
+
+        }
+
         public override void handlePOSTRequest(RequestHandler p, System.IO.StreamReader inputData)
         {
-            throw new NotImplementedException();
+            Console.WriteLine("POST request: {0}", p.http_url);
+            List<KeyValuePair<string, string>> data = new List<KeyValuePair<string, string>>();
+            string[] str = inputData.ReadLine().Split('&');
+            for (int i = 0; i < str.Length; i++)
+            {
+                string[] temp = str[i].Split('=');
+                data.Add(new KeyValuePair<string,string>(temp[0], temp[1]));
+            }
+            HttpHeaderModel header = new HttpHeaderModel();
+            header.ContentType = "text/html";
+            //header.Protocol = ResponseStatus.Instance.getStatus(200);
+
         }
 
         public void WritePost(RequestHandler p, string path)

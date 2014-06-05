@@ -13,10 +13,10 @@ namespace SeHacWebServer
         static void Main(string[] args)
         {
             SettingsModel settings = XMLParser.DeserializeXML();
-            HttpManager httpServer = new HttpServer(settings.webPort);
+            Server httpServer = new HttpServer(settings.webPort);
             httpServer.settings = settings;
             httpServer.StartServer();
-            HttpManager controlServer = new ControlServer(settings.controlPort);
+            Server controlServer = new ControlServer(settings.controlPort);
             controlServer.settings = settings;
             controlServer.StartServer();
         }

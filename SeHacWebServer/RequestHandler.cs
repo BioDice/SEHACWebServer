@@ -13,10 +13,9 @@ namespace SeHacWebServer
 {
     public class RequestHandler
     {
-        public TcpClient socket;
-        public HttpManager srv;
+        public Server srv;
 
-        public NetworkStream stream;
+        public Stream stream;
         //public StreamWriter outputStream;
 
         public String http_method;
@@ -25,15 +24,14 @@ namespace SeHacWebServer
         public Hashtable httpHeaders = new Hashtable();
         private static int MAX_POST_SIZE = 10 * 1024 * 1024;
 
-        public RequestHandler(TcpClient client, HttpManager server)
+        public RequestHandler(Server server, Stream stream)
         {
-            this.socket = client;
+            this.stream = stream;
             this.srv = server;
         }
 
         public void Process()
         {
-            stream = socket.GetStream();
             //outputStream = new StreamWriter(new BufferedStream(socket.GetStream()));
 
             try
@@ -54,8 +52,7 @@ namespace SeHacWebServer
                 Console.WriteLine("Exception: " + e.ToString());
             }
             stream.Flush();
-            stream = null;
-            socket.Close();
+            stream.Close();
         }
 
         public void handleGETRequest()
