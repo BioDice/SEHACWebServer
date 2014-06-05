@@ -161,7 +161,6 @@ namespace SeHacWebServer
             }
             Console.WriteLine("get post data end");
             srv.handlePOSTRequest(this, new StreamReader(ms));
-
         }
 
         public void SendHeader(HttpHeaderModel header)

@@ -30,6 +30,5 @@ namespace SeHacWebServer
 
             return LoadedObj;
         }
-        
     }
 }
