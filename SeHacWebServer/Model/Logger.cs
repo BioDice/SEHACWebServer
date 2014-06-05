@@ -10,14 +10,16 @@ namespace SeHacWebServer
 {
     class Logger
     {
+        private static int current = -1;
         private Thread m_doStuff;
-        private static Queue<String> m_loggerQueue= new Queue<String>();
+        private static String[] m_loggerQueue = new String[3];
         private static Semaphore m_loggerSemaphore = new Semaphore(3,3);
         ///////
 
         public Logger()
         {
             m_doStuff = new Thread(doLogging);
+            m_doStuff.Start();
         }
 
         public static void addLog(string logline)
@@ -27,7 +29,7 @@ namespace SeHacWebServer
             //threadsafe sup
             lock(m_loggerQueue)
             {
-                m_loggerQueue.Enqueue(logline);
+                m_loggerQueue[++current] = logline;
             }
         }
 
@@ -45,10 +47,11 @@ namespace SeHacWebServer
 
                 lock (m_loggerQueue)
                 {
-                    logline = m_loggerQueue.Dequeue();
-                    m_loggerSemaphore.Release();
+                    logline = m_loggerQueue[0];
                     if (logline != null)
                     {
+                        m_loggerQueue = swap();
+                        m_loggerSemaphore.Release();
                         //writelineAsync omdat er meerdere threads tegelijk loggen mss nog veranderen
                         using (StreamWriter sw = File.AppendText(".log.txt"))
                         {
@@ -57,6 +60,14 @@ namespace SeHacWebServer
                     }
                 }
             }
+        }
+
+        public String[] swap()
+        {
+            var temp = new String[m_loggerQueue.Length];
+            Array.Copy(m_loggerQueue, 1, temp, 0, m_loggerQueue.Length - 1);
+            current--;
+            return temp;
         }
     }
 }
