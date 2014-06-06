@@ -18,9 +18,10 @@ namespace SeHacWebServer
         public Stream stream;
         //public StreamWriter outputStream;
 
-        public String http_method;
-        public String http_url;
-        public String http_protocol_versionstring;
+        public String http_method { get; set; }
+        public String http_url { get; set; }
+        public String http_protocol_versionstring { get; set; }
+        public String http_host { get; set; }
         public Hashtable httpHeaders = new Hashtable();
         private static int MAX_POST_SIZE = 10 * 1024 * 1024;
 
@@ -116,6 +117,7 @@ namespace SeHacWebServer
 
                 string value = line.Substring(pos, line.Length - pos);
                 Console.WriteLine("header: {0}:{1}", name, value);
+                http_host = line.Contains("Host") ? http_host = line : http_host = null;
                 httpHeaders[name] = value;
             }
         }

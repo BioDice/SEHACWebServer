@@ -45,6 +45,7 @@
     <Compile Include="Model\Logger.cs" />
     <Compile Include="Model\DirectoryListing.cs" />
     <Compile Include="Model\HttpHeaderModel.cs" />
+    <Compile Include="Model\Router.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Model\SettingsModel.cs" />
     <Compile Include="Program.cs" />

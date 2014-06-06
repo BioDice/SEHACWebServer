@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SeHacWebServer.Model;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,10 +14,12 @@ namespace SeHacWebServer
 {
     class ControlServer : Server
     {
-        public ControlServer(int port)
-            : base(port)
+        public ControlServer(SettingsModel settings)
+            : base(settings.controlPort)
         {
             serverName = "ControlServer";
+            this.settings = settings;
+            
         }
 
         public override void handleGETRequest(RequestHandler p, string url)

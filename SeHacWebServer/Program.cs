@@ -13,11 +13,9 @@ namespace SeHacWebServer
         static void Main(string[] args)
         {
             SettingsModel settings = XMLParser.DeserializeXML();
-            Server httpServer = new HttpServer(settings.webPort);
-            httpServer.settings = settings;
+            Server httpServer = new HttpServer(settings);
             httpServer.StartServer();
-            Server controlServer = new ControlServer(settings.controlPort);
-            controlServer.settings = settings;
+            Server controlServer = new ControlServer(settings);
             controlServer.StartServer();
         }
     }

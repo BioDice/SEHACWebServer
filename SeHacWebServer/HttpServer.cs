@@ -11,9 +11,10 @@ namespace SeHacWebServer
 {
     public class HttpServer : Server
     {
-        public HttpServer(int port) : base(port)
+        public HttpServer(SettingsModel settings) : base(settings.webPort)
         {
             serverName = "HttpServer";
+            this.settings = settings;
         }
 
         public override void handleGETRequest(RequestHandler p, string url) 
