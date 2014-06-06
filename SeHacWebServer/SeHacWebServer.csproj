@@ -73,7 +73,8 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Servers\Server.cs" />
-    <Compile Include="Model\SettingsModel.cs" />
+    <Compile Include="XMLModels\ExtensionsModel.cs" />
+    <Compile Include="XMLModels\SettingsModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestHandler.cs" />
@@ -114,7 +115,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="settings.xml" />
+    <Content Include="XML\extensions.xml" />
+    <Content Include="XML\settings.xml" />
     <Content Include="UserDb.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

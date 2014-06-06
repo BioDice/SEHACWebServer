@@ -24,7 +24,7 @@ namespace SeHacWebServer
         {
             XmlSerializer SerializerObj = new XmlSerializer(typeof(SettingsModel));
             string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
-            FileStream ReadFileStream = new FileStream(root + "/settings.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
+            FileStream ReadFileStream = new FileStream(root + "/XML/settings.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
             SettingsModel LoadedObj = (SettingsModel)SerializerObj.Deserialize(ReadFileStream);
             ReadFileStream.Close();
 
