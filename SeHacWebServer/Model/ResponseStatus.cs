@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SeHacWebServer
 {
-    class ResponseStatus
+    public class ResponseStatus
     {
         	private static Dictionary<int, string> statuses = new Dictionary<int, string>()
             {

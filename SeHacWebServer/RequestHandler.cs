@@ -117,7 +117,7 @@ namespace SeHacWebServer
 
                 string value = line.Substring(pos, line.Length - pos);
                 Console.WriteLine("header: {0}:{1}", name, value);
-                http_host = line.Contains("Host") ? http_host = line : http_host = null;
+                http_host = line.Contains("Host") ? http_host = line : http_host = http_host;
                 httpHeaders[name] = value;
             }
         }

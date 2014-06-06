@@ -11,7 +11,7 @@ namespace SeHacWebServer.Model
     {
         public static String Generate(String pathString, string root)
         {
-            String html = "<ul>";
+            String html = "<html><head><title>Directory list</title></head><body><ul>";
             
             String[] dirList = Directory.GetDirectories(pathString);
             String[] fileList = Directory.GetFiles(pathString);
@@ -29,12 +29,12 @@ namespace SeHacWebServer.Model
                 html += "<li><a href=\"." + file.Substring(root.Length).Replace("\\", "/") + "\">" + file.Substring(pathString.Length + 1) + "</a></li>";
             }
 
-            if (html.Length == 4)
+            /*if (html.Length == 4)
             {
                 //Directory is leeg...
-            }
+            }*/
 
-            html += "</ul>";
+            html += "</ul></body></html>";
 
             return html;
         }

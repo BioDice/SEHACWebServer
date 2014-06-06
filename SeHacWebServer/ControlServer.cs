@@ -19,16 +19,16 @@ namespace SeHacWebServer
         {
             serverName = "ControlServer";
             this.settings = settings;
-            
+            router = new AdminRouter(this);
         }
 
         public override void handleGETRequest(RequestHandler p, string url)
         {
             try
             {
-                string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
-                string path = root + @"/controlserver_files/main.html";
-                WritePost(p, path);
+                ResponseStatus response = new ResponseStatus();
+                string route = router.CheckRoutes(url, p.http_host);
+                WritePost(p, route);
             }
             catch (IOException ex)
             {

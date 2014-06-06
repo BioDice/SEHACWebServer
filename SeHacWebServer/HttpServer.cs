@@ -15,37 +15,20 @@ namespace SeHacWebServer
         {
             serverName = "HttpServer";
             this.settings = settings;
+            router = new ClientRouter(this);
         }
 
         public override void handleGETRequest(RequestHandler p, string url) 
         {
             try
             {
-                string path = settings.webRoot + url;
-                if (url == "/")
-                {
-                    path = settings.webRoot + "/" + settings.defaultPage;
+                string path = router.CheckRoutes(url, p.http_host);
+                if (!Directory.Exists(path))
                     WritePost(p, path);
-                }
-                else if (File.Exists(path))
-                {
-                    WritePost(p, path);
-                }
-                else if (Directory.Exists(path))
-                {
-                    if (Boolean.Parse(settings.dirListing))
-                    {
-                        string dirListing = "<html><head><title>Directory list</title></head><body>";
-                        dirListing += DirectoryListing.Generate(path, settings.webRoot);
-                        dirListing += "</body></html>";
-                        SendDirectories(p, dirListing);
-                    }
-                    else
-                    {
-                        Send404(p);
-                    }
-                }
-
+                else if (Boolean.Parse(settings.dirListing))
+                    SendDirectories(p, DirectoryListing.Generate(path, settings.webRoot));
+                else
+                    Send404(p);
             }
             catch (IOException ex)
             {

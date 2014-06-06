@@ -3,11 +3,28 @@
 	<title>Control Server</title>
 	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script>
-	/*$( document ).ready(function() {
+	$( document ).ready(function() {
+		var domain = "https://"+document.domain+":"+location.port;
+		$.ajax(
+            {
+                url: domain+"/getFormValues",
+                type: "POST",
+                dataType: "json",
+                success: function (data)
+                {
+                    alert("Success!");
+                },
+                error: function (jqXHR, textStatus, errorThrown)
+                {
+                    alert("ERROR! --" + textStatus);
+                    console.log(textStatus, errorThrown);
+                }
+            });
+
 		$("#submit").click(function (event) {
 			event.preventDefault();
 		});
-	});*/
+	});
 	</script>
 </head>
 <body>

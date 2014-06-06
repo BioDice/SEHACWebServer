@@ -19,12 +19,11 @@ namespace SeHacWebServer
         public SettingsModel settings { get; set; }
         private Thread thread;
         protected string serverName { get; set; }
-        protected Router router;
+        protected Router router { get; set; }
 
         public Server(int port)
         {
             this.port = port;
-            router = new Router();
         }
 
         public void StartServer()

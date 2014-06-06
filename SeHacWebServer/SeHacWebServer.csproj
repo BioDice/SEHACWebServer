@@ -57,6 +57,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ControlServer.cs" />
+    <Compile Include="Model\AdminRouter.cs" />
+    <Compile Include="Model\ClientRouter.cs" />
     <Compile Include="Model\Logger.cs" />
     <Compile Include="Model\DirectoryListing.cs" />
     <Compile Include="Model\HttpHeaderModel.cs" />
@@ -74,6 +76,10 @@
     <Compile Include="HttpServer.cs" />
     <Compile Include="Model\ResponseStatus.cs" />
     <Compile Include="Model\XMLParser.cs" />
+    <Compile Include="UserDbDataSet.cs">
+      <DependentUpon>UserDbDataSet.xsd</DependentUpon>
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="UserDbDataSet.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace SeHacWebServer.Model
 {
-    public class Router
+    public abstract class Router
     {
-        private RequestHandler request;
-        private ResponseStatus response;
+        private ResponseStatus response { get; set; }
+        private Server server;
 
-        public Router(RequestHandler request, ResponseStatus response)
+        public Router(Server server)
         {
-            this.request = request;
-            this.response = response;
+            this.server = server;
         }
 
-        public void CheckRoutes(string url)
-        {
-
-        }
+        public abstract string CheckRoutes(string url, string host);
     }
 }
