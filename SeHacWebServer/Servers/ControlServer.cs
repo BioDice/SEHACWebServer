@@ -9,6 +9,7 @@ using System.Security.Authentication;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace SeHacWebServer
 {
@@ -57,7 +58,6 @@ namespace SeHacWebServer
 
         public override void handlePOSTRequest(RequestHandler p, System.IO.StreamReader inputData, string url)
         {
-            Header header = new ResponseHeader();
             if (router.CheckAjaxRoutes(url) != null)
             {
                 switch (router.CheckAjaxRoutes(url))
@@ -73,18 +73,48 @@ namespace SeHacWebServer
             else
             {
                 Console.WriteLine("POST request: {0}", p.http_url);
-                List<KeyValuePair<string, string>> data = new List<KeyValuePair<string, string>>();
+                Dictionary<string, string> data = new Dictionary<string, string>();
                 string[] str = inputData.ReadLine().Split('&');
                 for (int i = 0; i < str.Length; i++)
                 {
                     string[] temp = str[i].Split('=');
-                    data.Add(new KeyValuePair<string, string>(temp[0], temp[1]));
+                    data.Add(temp[0], temp[1]);
                 }
-                
-                header.SetHeader("ContentType", "text/html");
-                p.SendHeader(header);
-
+                UpdateSettingsModel(data);
+                string route = router.CheckRoutes(url);
+                WritePost(p, route);
             }
+        }
+
+        public void UpdateSettingsModel(Dictionary<string, string> dict)
+        {
+            SettingsModel settings = new SettingsModel();
+            foreach (KeyValuePair<string, string> entry in dict)
+            {
+                switch (entry.Key)
+                {
+                    case "controlPort":
+                        settings.controlPort = int.Parse(entry.Value);
+                        break;
+                    case "defaultPage":
+                        settings.defaultPage = entry.Value;
+                        break;
+                    case "dirListing":
+                        settings.dirListing = entry.Value == "on" ? settings.dirListing = "true" : settings.dirListing = "false";
+                        break;
+                    case "webPort":
+                        settings.webPort = int.Parse(entry.Value);
+                        break;
+                    case "webRoot":
+                        settings.webRoot = System.Net.WebUtility.UrlDecode(entry.Value);
+                        break;
+                    default:
+                        settings.dirListing = entry.Value == "on" ? settings.dirListing = "true" : settings.dirListing = "false";
+                        break;
+                }
+            }
+            XMLParser.SerializeXML(settings);
+            this.settings = settings;
         }
 
         public void WritePost(RequestHandler p, string path)

@@ -28,9 +28,9 @@ namespace SeHacWebServer.Model
 
         public override string CheckAjaxRoutes(string url)
         {
-            return ajaxCalls[url];
-
-                return JSONParser.SerializeJSON(server.settings);
+            string output = null;
+            ajaxCalls.TryGetValue(url, out output);
+            return output;
         }
 
         

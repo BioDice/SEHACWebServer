@@ -37,9 +37,9 @@
             }
         });
 
-		$("#submit").click(function (event) {
+		/*$("#submit").click(function (event) {
 			event.preventDefault();
-		});
+		});*/
 
 		$("#showLog").click(function (event) {
 			$.ajax({
@@ -70,23 +70,23 @@
 				</tr>
 				<tr>
 					<td>Web port:</td>
-					<td><input id="WebPort" type="text" name="txtWebPort" /></td>
+					<td><input id="WebPort" type="text" name="webPort" /></td>
 				</tr>
 				<tr>
 					<td>Control port:</td>
-					<td><input id="ControlPort" type="text" name="txtControlPort" /></td>
+					<td><input id="ControlPort" type="text" name="controlPort" /></td>
 				</tr>
 				<tr>
 					<td>Webroot:</td>
-					<td><input id="WebRoot" type="text" name="txtWebRoot" /></td>
+					<td><input id="WebRoot" type="text" name="webRoot" /></td>
 				</tr>
 				<tr>
 					<td>Default page:</td>
-					<td><input id="DefaultPage" type="text" name="txtDefaultPage" /></td>
+					<td><input id="DefaultPage" type="text" name="defaultPage" /></td>
 				</tr>
 				<tr>
 					<td>Directory browsing:</td>
-					<td><input id="Dirlisting" type="checkbox" name="chkDirlisting" /></td>
+					<td><input id="Dirlisting" type="checkbox" name="dirListing" /></td>
 				</tr>
 				<tr>
 					<td><input type="button" id="showLog" name="showLog" value="Show Log"></td>
@@ -95,7 +95,7 @@
 			</table>
 		</form>
 	</div>
-	<div id="divLogContent" style="margin-left: 10px; float: left;">
+	<div id="divLogContent" style="position: relative; width: 800px; overflow: hidden; height: 400px; margin-left: 10px; float: left; overflow-y: auto;">
 
 	</div>
 </body>

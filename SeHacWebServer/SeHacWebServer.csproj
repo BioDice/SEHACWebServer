@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="XMLModels\Extension.cs" />
     <Compile Include="Model\JSONParser.cs" />
     <Compile Include="Servers\ControlServer.cs" />
     <Compile Include="Routers\AdminRouter.cs" />

@@ -1,3 +1,13 @@
-﻿<extensions>
-  <extension></extension>
-</extensions>
+﻿<?xml version="1.0"?>
+<validextensions>
+  <extensions>
+    <extension ext="html" content="text/html" />
+    <extension ext="htm" content="text/html" />
+    <extension ext="php" content="text/html" />
+    <extension ext="xml" content="text/xml" />
+    <extension ext="js" content="text/javascript" />
+    <extension ext="css" content="text/stylesheet" />
+    <extension ext="png" content="image/png" />
+    <extension ext="jpg" content="image/jpg" />
+  </extensions>
+</validextensions>

@@ -28,12 +28,12 @@ namespace SeHacWebServer
                 else if (Boolean.Parse(settings.dirListing))
                     SendDirectories(p, DirectoryListing.Generate(path, settings.webRoot));
                 else
-                    Send404(p);
+                    SendErrorPage(p);
             }
             catch (IOException ex)
             {
                 Console.WriteLine("File not Found");
-                Send404(p);
+                SendErrorPage(p);
             }
         }
 
@@ -90,7 +90,7 @@ namespace SeHacWebServer
             p.stream.Write(response, 0, response.Length);
         }
 
-        public void Send404(RequestHandler p)
+        public void SendErrorPage(RequestHandler p)
         {
             ResponseHeader header = new ResponseHeader();
             string content = "<html><head><title>404 Not Found</title></head><body><h1>404 - Page Not Found</body></html>";

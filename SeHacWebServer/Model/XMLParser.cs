@@ -15,7 +15,7 @@ namespace SeHacWebServer
         {
             XmlSerializer SerializerObj = new XmlSerializer(typeof(SettingsModel));
             string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
-            TextWriter WriteFileStream = new StreamWriter(root + "/settings.xml");
+            TextWriter WriteFileStream = new StreamWriter(root + "/XML/settings.xml");
             SerializerObj.Serialize(WriteFileStream, settings);
             WriteFileStream.Close();
         }
