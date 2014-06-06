@@ -60,6 +60,6 @@ namespace SeHacWebServer
         public abstract Stream GetStream(TcpClient client);
 
         public abstract void handleGETRequest(RequestHandler p, string url);
-        public abstract void handlePOSTRequest(RequestHandler p, StreamReader inputData);
+        public abstract void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url);
     } 
 }

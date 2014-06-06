@@ -49,6 +49,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -56,25 +58,27 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ControlServer.cs" />
-    <Compile Include="Model\AdminRouter.cs" />
-    <Compile Include="Model\ClientRouter.cs" />
+    <Compile Include="Model\JSONParser.cs" />
+    <Compile Include="Servers\ControlServer.cs" />
+    <Compile Include="Routers\AdminRouter.cs" />
+    <Compile Include="Routers\ClientRouter.cs" />
     <Compile Include="Model\Logger.cs" />
     <Compile Include="Model\DirectoryListing.cs" />
-    <Compile Include="Model\HttpHeaderModel.cs" />
-    <Compile Include="Model\Router.cs" />
+    <Compile Include="HeaderModels\Header.cs" />
+    <Compile Include="HeaderModels\RequestHeader.cs" />
+    <Compile Include="Routers\Router.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Server.cs" />
+    <Compile Include="Servers\Server.cs" />
     <Compile Include="Model\SettingsModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RequestHandler.cs" />
-    <Compile Include="HttpServer.cs" />
-    <Compile Include="Model\ResponseStatus.cs" />
+    <Compile Include="Servers\HttpServer.cs" />
+    <Compile Include="HeaderModels\ResponseHeader.cs" />
     <Compile Include="Model\XMLParser.cs" />
     <Compile Include="UserDbDataSet.cs">
       <DependentUpon>UserDbDataSet.xsd</DependentUpon>
@@ -85,6 +89,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UserDbDataSet.xsd</DependentUpon>
     </Compile>
+    <Compile Include="Visitor\HeaderVisitor.cs" />
+    <Compile Include="Visitor\RouteVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

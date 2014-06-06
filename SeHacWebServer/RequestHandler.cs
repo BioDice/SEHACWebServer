@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SeHacWebServer.Model;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -22,31 +23,26 @@ namespace SeHacWebServer
         public String http_url { get; set; }
         public String http_protocol_versionstring { get; set; }
         public String http_host { get; set; }
-        public Hashtable httpHeaders = new Hashtable();
+        public RequestHeader requestHeader { get; set; }
         private static int MAX_POST_SIZE = 10 * 1024 * 1024;
 
         public RequestHandler(Server server, Stream stream)
         {
             this.stream = stream;
             this.srv = server;
+            requestHeader = new RequestHeader();
         }
 
         public void Process()
         {
-            //outputStream = new StreamWriter(new BufferedStream(socket.GetStream()));
-
             try
             {
                 parseRequest();
                 readHeaders();
                 if (http_method.Equals("GET"))
-                {
                     handleGETRequest();
-                }
                 else if (http_method.Equals("POST"))
-                {
                     handlePOSTRequest();
-                }
             }
             catch (Exception e)
             {
@@ -105,9 +101,8 @@ namespace SeHacWebServer
 
                 int separator = line.IndexOf(':');
                 if (separator == -1)
-                {
                     throw new Exception("invalid http header line: " + line);
-                }
+                
                 String name = line.Substring(0, separator);
                 int pos = separator + 1;
                 while ((pos < line.Length) && (line[pos] == ' '))
@@ -117,8 +112,7 @@ namespace SeHacWebServer
 
                 string value = line.Substring(pos, line.Length - pos);
                 Console.WriteLine("header: {0}:{1}", name, value);
-                http_host = line.Contains("Host") ? http_host = line : http_host = http_host;
-                httpHeaders[name] = value;
+                requestHeader.SetHeader(name, value);
             }
         }
 
@@ -128,9 +122,9 @@ namespace SeHacWebServer
             Console.WriteLine("get post data start");
             int content_len = 0;
             MemoryStream ms = new MemoryStream();
-            if (this.httpHeaders.ContainsKey("Content-Length"))
+            if (this.requestHeader.Headers.ContainsKey("Content-Length"))
             {
-                content_len = Convert.ToInt32(this.httpHeaders["Content-Length"]);
+                content_len = Convert.ToInt32(this.requestHeader.Headers["Content-Length"]);
                 if (content_len > MAX_POST_SIZE)
                 {
                     throw new Exception(
@@ -162,19 +156,13 @@ namespace SeHacWebServer
                 ms.Seek(0, SeekOrigin.Begin);
             }
             Console.WriteLine("get post data end");
-            srv.handlePOSTRequest(this, new StreamReader(ms));
+            srv.handlePOSTRequest(this, new StreamReader(ms), http_url);
         }
 
-        public void SendHeader(HttpHeaderModel header)
+        public void SendHeader(Header header)
         {
             string sBuffer = "";
-            sBuffer = sBuffer + header.Protocol + " " + header.ResponseCode + "\r\n";
-            //sBuffer = sBuffer + "Server: cx1193719-b\r\n";
-            sBuffer = sBuffer + "Content-Type: " + header.ContentType + "\r\n";
-            //sBuffer = sBuffer + "Accept-Ranges: bytes\r\n";
-            sBuffer = sBuffer + "Content-Length: " + header.ContentLength + "\r\n";
-            //sBuffer = sBuffer + "Host: "+header.Host+"\r\n";
-            sBuffer = sBuffer + "Connection: close \r\n\r\n";
+            sBuffer = header.ToString();
             stream.Write(Encoding.ASCII.GetBytes(sBuffer), 0, sBuffer.Length);
             stream.Flush();
         }

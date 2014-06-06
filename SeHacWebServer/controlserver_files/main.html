@@ -4,31 +4,47 @@
 	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script>
 	$( document ).ready(function() {
+		var WebPort 	= $("#WebPort");
+		var ControlPort = $("#ControlPort");
+		var WebRoot 	= $("#WebRoot");
+		var DefaultPage = $("#DefaultPage");
+		var Dirlisting 	= $("#Dirlisting");
 		var domain = "https://"+document.domain+":"+location.port;
-		$.ajax(
+		$.ajax({
+            url: domain+"/getFormValues",
+            type: "POST",
+            dataType: "json",
+            success: function (data)
             {
-                url: domain+"/getFormValues",
-                type: "POST",
-                dataType: "json",
-                success: function (data)
+                WebPort.val(data.webPort);
+                ControlPort.val(data.controlPort);
+                WebRoot.val(data.webRoot);
+                DefaultPage.val(data.defaultPage);
+                JSON.parse(data);
+                if (data.dirListing === "true")
                 {
-                    alert("Success!");
-                },
-                error: function (jqXHR, textStatus, errorThrown)
-                {
-                    alert("ERROR! --" + textStatus);
-                    console.log(textStatus, errorThrown);
+                	Dirlisting.prop("checked", true);
                 }
-            });
+            	else if (data.dirListing === "false")
+            	{
+            		Dirlisting.prop("checked", false);
+            	}
+            },
+            error: function (jqXHR, textStatus, errorThrown)
+            {
+                alert("ERROR! --" + textStatus);
+                console.log(textStatus, errorThrown);
+            }
+        });
 
-		$("#submit").click(function (event) {
+		/*$("#submit").click(function (event) {
 			event.preventDefault();
-		});
+		});*/
 	});
 	</script>
 </head>
 <body>
-	<form method="post" action="#" id="frmControlPanel">
+	<form method="post" action="/" id="frmControlPanel">
 		<table style="background-color: #FFFFDD;" border="1">
 			<tr style="background-color: #D3D3D3;">
 				<td style="font-weight: bold;">SehacWebServer</td>
@@ -36,23 +52,23 @@
 			</tr>
 			<tr>
 				<td>Web port:</td>
-				<td><input type="text" name="txtWebPort" /></td>
+				<td><input id="WebPort" type="text" name="txtWebPort" /></td>
 			</tr>
 			<tr>
 				<td>Control port:</td>
-				<td><input type="text" name="txtControlPort" /></td>
+				<td><input id="ControlPort" type="text" name="txtControlPort" /></td>
 			</tr>
 			<tr>
 				<td>Webroot:</td>
-				<td><input type="text" name="txtWebRoot" /></td>
+				<td><input id="WebRoot" type="text" name="txtWebRoot" /></td>
 			</tr>
 			<tr>
 				<td>Default page:</td>
-				<td><input type="text" name="txtDefaultPage" /></td>
+				<td><input id="DefaultPage" type="text" name="txtDefaultPage" /></td>
 			</tr>
 			<tr>
 				<td>Directory browsing:</td>
-				<td><input type="check" name="chkDirlisting" /></td>
+				<td><input id="Dirlisting" type="checkbox" name="chkDirlisting" /></td>
 			</tr>
 			<tr>
 				<td><input type="button" id="showLog" name="showLog" value="Show Log"></td>

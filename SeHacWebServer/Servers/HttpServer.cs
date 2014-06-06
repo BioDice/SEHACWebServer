@@ -22,7 +22,7 @@ namespace SeHacWebServer
         {
             try
             {
-                string path = router.CheckRoutes(url, p.http_host);
+                string path = router.CheckRoutes(url);
                 if (!Directory.Exists(path))
                     WritePost(p, path);
                 else if (Boolean.Parse(settings.dirListing))
@@ -42,7 +42,7 @@ namespace SeHacWebServer
             return client.GetStream();
         }
     
-        public override void handlePOSTRequest(RequestHandler p, StreamReader inputData) 
+        public override void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url) 
         {
             /*Console.WriteLine("POST request: {0}", p.http_url);
             p.writeSuccess();
@@ -57,7 +57,7 @@ namespace SeHacWebServer
 
         public void WritePost(RequestHandler p, string path)
         {
-            HttpHeaderModel header = new HttpHeaderModel();
+            Header header = new ResponseHeader();
             string sResponse = "";
             int iTotBytes = 0;
             FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -72,10 +72,8 @@ namespace SeHacWebServer
             reader.Close();
             fs.Close();
 
-            header.ContentLength = bytes.Length;
-            header.ContentType = "text/html";
-            header.Protocol = "HTTP/1.1";
-            header.ResponseCode = "200 OK";
+            header.SetHeader("ContentLength", bytes.Length.ToString());
+            header.SetHeader("ContentType", p.requestHeader.Headers["Accept"]);
 
             p.SendHeader(header);
 
@@ -84,24 +82,21 @@ namespace SeHacWebServer
 
         public void SendDirectories(RequestHandler p, string dirs)
         {
-            HttpHeaderModel header = new HttpHeaderModel();
+            Header header = new ResponseHeader();
             byte[] response = Encoding.ASCII.GetBytes(dirs);
-            header.ContentLength = response.Length;
-            header.ContentType = "text/html";
-            header.Protocol = "HTTP/1.1";
-            header.ResponseCode = "200 OK";
+            header.SetHeader("ContentLength", response.Length.ToString());
+            header.SetHeader("ContentType", p.requestHeader.Headers["Accept"]);
             p.SendHeader(header);
             p.stream.Write(response, 0, response.Length);
         }
 
         public void Send404(RequestHandler p)
         {
-            HttpHeaderModel header = new HttpHeaderModel();
+            ResponseHeader header = new ResponseHeader();
             string content = "<html><head><title>404 Not Found</title></head><body><h1>404 - Page Not Found</body></html>";
             byte[] response = Encoding.ASCII.GetBytes(content);
-            header.Protocol = "HTTP/1.1";
-            header.ResponseCode = "404 Not Found";
-            header.ContentLength = response.Length;
+            header.Status = 404;
+            header.SetHeader("ContentLength", response.Length.ToString());
             p.SendHeader(header);
             p.stream.Write(response, 0, response.Length);
         }

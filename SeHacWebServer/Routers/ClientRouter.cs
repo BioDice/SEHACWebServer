@@ -16,7 +16,7 @@ namespace SeHacWebServer.Model
             this.server = server;
         }
 
-        public override string CheckRoutes(string url, string host)
+        public override string CheckRoutes(string url)
         {
             string path = server.settings.webRoot + url;
             if (url == "/")

@@ -16,10 +16,15 @@ namespace SeHacWebServer.Model
             this.server = server;
         }
 
-        public override string CheckRoutes(string url, string host)
+        public override string CheckRoutes(string url)
         {
             string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
             return root + @"/controlserver_files/main.html";
+        }
+
+        public override string CheckAjaxRoutes(string url)
+        {
+            return JSONParser.SerializeJSON(server.settings);
         }
     }
 }

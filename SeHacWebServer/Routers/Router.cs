@@ -9,7 +9,7 @@ namespace SeHacWebServer.Model
 {
     public abstract class Router
     {
-        private ResponseStatus response { get; set; }
+        private Header response { get; set; }
         private Server server;
 
         public Router(Server server)
@@ -17,6 +17,11 @@ namespace SeHacWebServer.Model
             this.server = server;
         }
 
-        public abstract string CheckRoutes(string url, string host);
+        public abstract string CheckRoutes(string url);
+        // deze methode moet weg zodra er een visitor is gemaakt
+        public virtual string CheckAjaxRoutes(string url)
+        {
+            return null;
+        }
     }
 }

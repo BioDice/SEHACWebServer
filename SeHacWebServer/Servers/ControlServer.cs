@@ -26,8 +26,7 @@ namespace SeHacWebServer
         {
             try
             {
-                ResponseStatus response = new ResponseStatus();
-                string route = router.CheckRoutes(url, p.http_host);
+                string route = router.CheckRoutes(url);
                 WritePost(p, route);
             }
             catch (IOException ex)
@@ -45,28 +44,40 @@ namespace SeHacWebServer
             stream.AuthenticateAsServer(certificate, false, SslProtocols.Ssl3, false);
 
             return stream;
-
         }
 
-        public override void handlePOSTRequest(RequestHandler p, System.IO.StreamReader inputData)
+        public override void handlePOSTRequest(RequestHandler p, System.IO.StreamReader inputData, string url)
         {
-            Console.WriteLine("POST request: {0}", p.http_url);
-            List<KeyValuePair<string, string>> data = new List<KeyValuePair<string, string>>();
-            string[] str = inputData.ReadLine().Split('&');
-            for (int i = 0; i < str.Length; i++)
+            Header header = new ResponseHeader();
+            if (p.requestHeader.Headers["Accept"].Contains("json"))
             {
-                string[] temp = str[i].Split('=');
-                data.Add(new KeyValuePair<string,string>(temp[0], temp[1]));
+                string json = router.CheckAjaxRoutes(url);
+                header.SetHeader("ContentType",p.requestHeader.Headers["Accept"]);
+                byte[] response = Encoding.ASCII.GetBytes(json);
+                header.SetHeader("ContentLength", response.Length.ToString());
+                p.SendHeader(header);
+                p.stream.Write(response, 0, response.Length);
             }
-            HttpHeaderModel header = new HttpHeaderModel();
-            header.ContentType = "text/html";
-            //header.Protocol = ResponseStatus.Instance.getStatus(200);
+            else
+            {
+                Console.WriteLine("POST request: {0}", p.http_url);
+                List<KeyValuePair<string, string>> data = new List<KeyValuePair<string, string>>();
+                string[] str = inputData.ReadLine().Split('&');
+                for (int i = 0; i < str.Length; i++)
+                {
+                    string[] temp = str[i].Split('=');
+                    data.Add(new KeyValuePair<string, string>(temp[0], temp[1]));
+                }
+                
+                header.SetHeader("ContentType", "text/html");
+                p.SendHeader(header);
 
+            }
         }
 
         public void WritePost(RequestHandler p, string path)
         {
-            HttpHeaderModel header = new HttpHeaderModel();
+            Header header = new ResponseHeader();
             string sResponse = "";
             int iTotBytes = 0;
             FileStream fs = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
@@ -81,14 +92,15 @@ namespace SeHacWebServer
             reader.Close();
             fs.Close();
 
-            header.ContentLength = bytes.Length;
-            header.ContentType = "text/html";
-            header.Protocol = "HTTP/1.1";
-            header.ResponseCode = "200 OK";
-
+            header.SetHeader("ContentLength", bytes.Length.ToString());
+            header.SetHeader("ContentType", "text/html");
             p.SendHeader(header);
-
             p.stream.Write(bytes, 0, bytes.Length);
+        }
+
+        public string ShowLog()
+        {
+            return null;
         }
     }
 }
