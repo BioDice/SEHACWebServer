@@ -29,7 +29,6 @@ namespace SeHacWebServer
                 string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
                 string path = root + @"/controlserver_files/main.html";
                 WritePost(p, path);
-
             }
             catch (IOException ex)
             {
