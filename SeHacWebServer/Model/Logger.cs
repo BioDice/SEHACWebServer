@@ -36,7 +36,6 @@ namespace SeHacWebServer
         /// <summary>
         /// logging worker thread
         /// </summary>
-        //TODO: EventWaitHandle?
         public void doLogging()
         {
             
