@@ -44,15 +44,34 @@ namespace SeHacWebServer
     
         public override void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url) 
         {
-            /*Console.WriteLine("POST request: {0}", p.http_url);
-            p.writeSuccess();
-            string data = inputData.ReadToEnd();
-            string content = "";
-            content += "<html><body><h1>test server</h1>";
-            content += "<a href=/test>return</a><p>";
-            content += "postbody: <pre>"+data+"</pre>";
-            content += "</p></body></html>";
-            p.outputStream.WriteLine(content);*/
+            Header header = new ResponseHeader();
+            string path = router.CheckRoutes(url);
+            Console.WriteLine("POST request: {0}", p.http_url);
+            Dictionary<string, string> data = ParsePostData(inputData);
+            byte[] bytes = WritePost(data, path);
+            header.SetHeader("ContentLength", bytes.Length.ToString());
+            header.SetHeader("ContentType", p.requestHeader.Headers["Accept"]);
+
+            p.SendHeader(header);
+            p.stream.Write(bytes, 0, bytes.Length);
+        }
+
+        public byte[] WritePost(Dictionary<string, string> data, string path)
+        {
+            StringBuilder sb = new StringBuilder();
+            using (StreamReader sr = new StreamReader(path))
+            {
+                String line;
+                while ((line = sr.ReadLine()) != null)
+                {
+                    sb.AppendLine(line);
+                }
+            }
+            foreach (KeyValuePair<string, string> entry in data)
+            {
+                sb.Replace("{{ "+ entry.Key +" }}", entry.Value);
+            }
+            return Encoding.ASCII.GetBytes(sb.ToString());
         }
 
         public void WritePost(RequestHandler p, string path)

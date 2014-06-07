@@ -15,7 +15,6 @@ namespace SeHacWebServer
 {
     class ControlServer : Server
     {
-        private string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
 
         public ControlServer(SettingsModel settings)
             : base(settings.controlPort)
@@ -56,8 +55,9 @@ namespace SeHacWebServer
             return stream;
         }
 
-        public override void handlePOSTRequest(RequestHandler p, System.IO.StreamReader inputData, string url)
+        public override void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url)
         {
+            // handle ajax calls
             if (router.CheckAjaxRoutes(url) != null)
             {
                 switch (router.CheckAjaxRoutes(url))
@@ -72,18 +72,18 @@ namespace SeHacWebServer
             }
             else
             {
-                Console.WriteLine("POST request: {0}", p.http_url);
-                Dictionary<string, string> data = new Dictionary<string, string>();
-                string[] str = inputData.ReadLine().Split('&');
-                for (int i = 0; i < str.Length; i++)
-                {
-                    string[] temp = str[i].Split('=');
-                    data.Add(temp[0], temp[1]);
-                }
-                UpdateSettingsModel(data);
-                string route = router.CheckRoutes(url);
-                WritePost(p, route);
+                // handle form post
+                PostControlForm(p, inputData, url);
             }
+        }
+
+        public void PostControlForm(RequestHandler p, StreamReader inputData, string url)
+        {
+            Console.WriteLine("POST request: {0}", p.http_url);
+            Dictionary<string, string> data = ParsePostData(inputData);
+            UpdateSettingsModel(data);
+            string route = router.CheckRoutes(url);
+            WritePost(p, route);
         }
 
         public void UpdateSettingsModel(Dictionary<string, string> dict)

@@ -20,6 +20,7 @@ namespace SeHacWebServer
         private Thread thread;
         protected string serverName { get; set; }
         protected Router router { get; set; }
+        protected string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
 
         public Server(int port)
         {
@@ -61,5 +62,17 @@ namespace SeHacWebServer
 
         public abstract void handleGETRequest(RequestHandler p, string url);
         public abstract void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url);
+
+        public Dictionary<string, string> ParsePostData(StreamReader inputData)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            string[] str = inputData.ReadLine().Split('&');
+            for (int i = 0; i < str.Length; i++)
+            {
+                string[] temp = str[i].Split('=');
+                data.Add(temp[0], temp[1]);
+            }
+            return data;
+        }
     } 
 }
