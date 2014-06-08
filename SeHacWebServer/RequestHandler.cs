@@ -9,13 +9,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace SeHacWebServer
 {
     public class RequestHandler
     {
         public Server srv;
-
+        private Stopwatch requestTimer;
         public Stream stream;
         //public StreamWriter outputStream;
 
@@ -23,11 +24,14 @@ namespace SeHacWebServer
         public String http_url { get; set; }
         public String http_protocol_versionstring { get; set; }
         public String http_host { get; set; }
+        public String http_clientIp { get; set; }
         public RequestHeader requestHeader { get; set; }
         private static int MAX_POST_SIZE = 10 * 1024 * 1024;
 
-        public RequestHandler(Server server, Stream stream)
+        public RequestHandler(String ip,Server server, Stream stream)
         {
+            this.http_clientIp = ip;
+            this.requestTimer = new Stopwatch();
             this.stream = stream;
             this.srv = server;
             requestHeader = new RequestHeader();
@@ -37,12 +41,14 @@ namespace SeHacWebServer
         {
             try
             {
+                requestTimer.Start();
                 parseRequest();
                 readHeaders();
                 if (http_method.Equals("GET"))
                     handleGETRequest();
                 else if (http_method.Equals("POST"))
                     handlePOSTRequest();
+                LogRequest();
             }
             catch (Exception e)
             {
@@ -66,7 +72,7 @@ namespace SeHacWebServer
                 next_char = inputStream.ReadByte();
                 if (next_char == '\n') { break; }
                 if (next_char == '\r') { continue; }
-                //if (next_char == -1) { Thread.Sleep(1); continue; };
+                if (next_char == -1) { Thread.Sleep(1); continue; };
                 data += Convert.ToChar(next_char);
             }
             return data;
@@ -165,6 +171,13 @@ namespace SeHacWebServer
             sBuffer = header.ToString();
             stream.Write(Encoding.ASCII.GetBytes(sBuffer), 0, sBuffer.Length);
             stream.Flush();
+        }
+        public void LogRequest()
+        {
+            requestTimer.Stop();
+            Logger.addLog(http_clientIp + " - " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss") + " - "
+                + requestTimer.ElapsedMilliseconds + "ms" + ": " + http_method + " " + http_url);
+
         }
     }
 }

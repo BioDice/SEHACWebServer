@@ -20,11 +20,13 @@ namespace SeHacWebServer
         private Thread thread;
         protected string serverName { get; set; }
         protected Router router { get; set; }
+        protected Semaphore m_ServerSemaphore;
         protected string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
 
         public Server(int port)
         {
             this.port = port;
+            m_ServerSemaphore = new Semaphore(20,20);
         }
 
         public void StartServer()
@@ -42,10 +44,11 @@ namespace SeHacWebServer
             {
                 Console.WriteLine("Waiting for connection...");
                 TcpClient client = listener.AcceptTcpClient();
-                
-                Stream stream = GetStream(client); // http stream
 
-                RequestHandler newRequest = new RequestHandler(this, stream);
+                m_ServerSemaphore.WaitOne();
+                Stream stream = GetStream(client); // http stream
+                String ip = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
+                RequestHandler newRequest = new RequestHandler(ip,this, stream);
                 Thread Thread = new Thread(new ThreadStart(newRequest.Process));
                 Thread.Name = "HTTP Request";
                 Thread.Start();

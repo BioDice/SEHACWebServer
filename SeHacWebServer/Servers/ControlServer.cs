@@ -36,6 +36,7 @@ namespace SeHacWebServer
                 Console.WriteLine("File not Found");
                 //Send404(p);
             }
+            m_ServerSemaphore.Release();
         }
 
         public override Stream GetStream(TcpClient client)
@@ -75,6 +76,7 @@ namespace SeHacWebServer
                 // handle form post
                 PostControlForm(p, inputData, url);
             }
+            m_ServerSemaphore.Release();
         }
 
         public void PostControlForm(RequestHandler p, StreamReader inputData, string url)

@@ -35,6 +35,7 @@ namespace SeHacWebServer
                 Console.WriteLine("File not Found");
                 SendErrorPage(p);
             }
+            m_ServerSemaphore.Release();
         }
 
         public override Stream GetStream(TcpClient client)
@@ -54,6 +55,7 @@ namespace SeHacWebServer
 
             p.SendHeader(header);
             p.stream.Write(bytes, 0, bytes.Length);
+            m_ServerSemaphore.Release();
         }
 
         public byte[] WritePost(Dictionary<string, string> data, string path)
