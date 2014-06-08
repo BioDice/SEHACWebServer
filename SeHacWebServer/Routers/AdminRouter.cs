@@ -19,11 +19,13 @@ namespace SeHacWebServer.Model
             ajaxCalls = new Dictionary<string, string>();
             ajaxCalls.Add("/getFormValues", "FormValues");
             ajaxCalls.Add("/getLogFiles", "LogFiles");
+            ajaxCalls.Add("/postLogin","LoginValues");
         }
 
         public override string CheckRoutes(string url)
         {
-            return root + @"/controlserver_files/main.html";
+            return root + @"/controlserver_files/login.html";
+            // ORIGINEEL return root + @"/controlserver_files/main.html";
         }
 
         public override string CheckAjaxRoutes(string url)
@@ -32,7 +34,5 @@ namespace SeHacWebServer.Model
             ajaxCalls.TryGetValue(url, out output);
             return output;
         }
-
-        
     }
 }

@@ -1,0 +1,41 @@
+<html>
+<head>
+	<title>Control Server</title>
+	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script>
+	var domain = "https://"+document.domain+":"+location.port;
+	$( document ).ready(function() {
+		var user = $('username').val();
+		var pass = $('password').val();
+		$("#doLogin").click(function (event) {
+			$.ajax({
+	            url: domain+"/postLogin",
+	            type: "POST",
+	            dataType: "json",
+				data:{"Username":user,"Password":pass},
+				success: function(data, textStatus, jqXHR)
+				{
+					//data - response from server
+				},
+				error: function (jqXHR, textStatus, errorThrown)
+				{
+			 
+				}
+			});
+		});
+	});
+	</script>
+</head>
+<body style="font-family: Verdana,Arial,sans-serif;">
+	<div style="float: left;">
+		Welkom bij onze Uber Webserver.
+		Om verder te gaan moet je eerst inloggen
+		<form name = "loginForm">
+		<p>Gebruikersnaam: <input type="text" name="username"> Wachtwoord: <input type="password" name="password">
+		<input type="button" id="doLogin" name="doLogin" value="Inloggen">
+		</p>
+		</form>
+	</div>
+	<div></div>
+</body>
+</html>

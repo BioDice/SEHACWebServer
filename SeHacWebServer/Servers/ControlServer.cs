@@ -10,12 +10,12 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
+using SeHacWebServer.Database;
 
 namespace SeHacWebServer
 {
     class ControlServer : Server
     {
-
         public ControlServer(SettingsModel settings)
             : base(settings.controlPort)
         {
@@ -68,6 +68,10 @@ namespace SeHacWebServer
                         break;
                     case "LogFiles":
                         OpenLogFile(p);
+                        
+                        break;
+                    case "LoginValues":
+                        Authenticate(p);
                         break;
                 }
             }
@@ -77,6 +81,16 @@ namespace SeHacWebServer
                 PostControlForm(p, inputData, url);
             }
             m_ServerSemaphore.Release();
+        }
+
+        /// <summary>
+        /// Authenticate de huidige gebruiker
+        /// Als het goed is gegaan moet je redirecten naar de main.html
+        /// </summary>
+        /// <param name="rHandler">De huidige requesthandler</param>
+        public void Authenticate(RequestHandler rHandler)
+        {
+            UserAuthentication.Authenticate("Leon", "Aap1234");
         }
 
         public void PostControlForm(RequestHandler p, StreamReader inputData, string url)
@@ -157,7 +171,7 @@ namespace SeHacWebServer
         {
             Header header = new ResponseHeader();
             StringBuilder sb = new StringBuilder();
-            using (StreamReader sr = new StreamReader(root + @"/Logfiles/HttpServer.log.txt"))
+            using (StreamReader sr = new StreamReader(root + @"/Logfiles/ControlServer.log.txt"))
             {
                 String line;
                 while ((line = sr.ReadLine()) != null)
