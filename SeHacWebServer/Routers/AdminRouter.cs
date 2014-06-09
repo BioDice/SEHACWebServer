@@ -24,7 +24,12 @@ namespace SeHacWebServer.Model
 
         public override string CheckRoutes(string url)
         {
-            return root + @"/controlserver_files/login.html";
+            if (url.Equals("/"))
+            {
+                return root + @"/controlserver_files/login.html";
+            }else if(url.Equals("/main.html"))
+                return root + @"/controlserver_files/"+url;
+            return null;
             // ORIGINEEL return root + @"/controlserver_files/main.html";
         }
 

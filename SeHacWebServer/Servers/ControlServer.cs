@@ -70,7 +70,6 @@ namespace SeHacWebServer
                         break;
                     case "LogFiles":
                         OpenLogFile(p);
-                        
                         break;
                     case "LoginValues":
                         Authenticate(p, inputData);
