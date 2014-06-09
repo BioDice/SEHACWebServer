@@ -14,6 +14,7 @@ namespace SeHacWebServer
         private Thread m_doStuff;
         private static String[] m_loggerQueue = new String[3];
         private static Semaphore m_loggerSemaphore = new Semaphore(3,3);
+        private string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
         ///////
 
         public Logger()
@@ -53,7 +54,7 @@ namespace SeHacWebServer
                         m_loggerSemaphore.Release();
                         //writelineAsync omdat er meerdere threads tegelijk loggen mss nog veranderen
                         //TEST URL
-                        using (StreamWriter sw = File.AppendText(@"C:\Users\Leonvw\Documents\GitHub\SEHACWebServer\SeHacWebServer\Logfiles\ControlServer.log.txt"))
+                        using (StreamWriter sw = File.AppendText(root + @"\Logfiles\ControlServer.log.txt"))
                         {
                             sw.WriteLineAsync(logline);
                         }

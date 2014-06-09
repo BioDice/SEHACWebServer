@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<serverSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
-  <webPort>8085</webPort>
-  <controlPort>8086</controlPort>
-  <webRoot>C%3A%2Fwebserver</webRoot>
-  <defaultPage>index.html</defaultPage>
-</serverSettings>

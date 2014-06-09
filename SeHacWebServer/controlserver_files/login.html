@@ -5,21 +5,23 @@
 	<script>
 	var domain = "https://"+document.domain+":"+location.port;
 	$( document ).ready(function() {
-		var user = $('username').val();
-		var pass = $('password').val();
+		var user = $('#username').val();
+		var pass = $('#password').val();
+
 		$("#doLogin").click(function (event) {
 			$.ajax({
 	            url: domain+"/postLogin",
 	            type: "POST",
 	            dataType: "json",
-				data:{"Username":user,"Password":pass},
+				data:$('#loginForm').serialize(),
 				success: function(data, textStatus, jqXHR)
 				{
+					alert(data.Authentication);
 					//data - response from server
 				},
 				error: function (jqXHR, textStatus, errorThrown)
 				{
-			 
+					alert(textStatus);
 				}
 			});
 		});
@@ -30,8 +32,8 @@
 	<div style="float: left;">
 		Welkom bij onze Uber Webserver.
 		Om verder te gaan moet je eerst inloggen
-		<form name = "loginForm">
-		<p>Gebruikersnaam: <input type="text" name="username"> Wachtwoord: <input type="password" name="password">
+		<form name="loginForm" id="loginForm">
+		<p>Gebruikersnaam: <input type="text" id="username" name="username"> Wachtwoord: <input type="password" id="password" name="password">
 		<input type="button" id="doLogin" name="doLogin" value="Inloggen">
 		</p>
 		</form>

@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using SeHacWebServer.Properties;
+using System.Text.RegularExpressions;
 
 namespace SeHacWebServer.Database
 {
@@ -18,23 +19,39 @@ namespace SeHacWebServer.Database
         /// </summary>
         /// <param name="user">user from login form</param>
         /// <param name="password">password from login form</param>
-        public static void Authenticate(String user,String password)
+        public static bool Authenticate(String user,String password)
         {
+            var positiveIntRegex = new Regex(@"^\w+$");
+            if (!positiveIntRegex.IsMatch(user))
+            {
+                return false;
+            }
+            if (!positiveIntRegex.IsMatch(password))
+            {
+                return false;
+            }
+
             String encryptedPass = Encrypt(password);
             string constr = Settings.Default.UserDbConnectionString;
             SqlConnection con = new SqlConnection(constr);
             SqlCommand command = new SqlCommand();
             command.Connection = con;
-            command.CommandText = "SELECT Password FROM Users WHERE Name = @Username" ;
-            command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue("@Username", user);
+            command.CommandText = "SELECT Password FROM Users WHERE Name = @Username";
+            command.CommandType = CommandType.Text;
+            
             con.Open();
-            string _password = command.ExecuteScalar().ToString();
+            string _password = "";
+            if (command.ExecuteScalar() != null)
+                _password = command.ExecuteScalar().ToString();
+            else
+                return false;
+            con.Close();
             if (encryptedPass.Equals(_password))
             {
-                //woop woop login bitch Session alles
+                return true;
             }
-            con.Close();
+            return false;
         }
 
         /// <summary>

@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using SeHacWebServer.Database;
+using System.Web.Script.Serialization;
 
 namespace SeHacWebServer
 {
@@ -71,7 +72,7 @@ namespace SeHacWebServer
                         
                         break;
                     case "LoginValues":
-                        Authenticate(p);
+                        Authenticate(p, inputData);
                         break;
                 }
             }
@@ -88,9 +89,13 @@ namespace SeHacWebServer
         /// Als het goed is gegaan moet je redirecten naar de main.html
         /// </summary>
         /// <param name="rHandler">De huidige requesthandler</param>
-        public void Authenticate(RequestHandler rHandler)
+        public void Authenticate(RequestHandler rHandler, StreamReader inputData)
         {
-            UserAuthentication.Authenticate("Leon", "Aap1234");
+            Dictionary<string, string> data = ParsePostData(inputData);
+            if (UserAuthentication.Authenticate(data.ElementAt(0).Value, data.ElementAt(1).Value))
+                GetLoginAuthentication(rHandler, true);
+            else
+                GetLoginAuthentication(rHandler, false);
         }
 
         public void PostControlForm(RequestHandler p, StreamReader inputData, string url)
@@ -160,6 +165,18 @@ namespace SeHacWebServer
         {
             Header header = new ResponseHeader();
             string json = JSONParser.SerializeJSON(settings);
+            header.SetHeader("ContentType", p.requestHeader.Headers["Accept"]);
+            byte[] response = Encoding.ASCII.GetBytes(json);
+            header.SetHeader("ContentLength", response.Length.ToString());
+            p.SendHeader(header);
+            p.stream.Write(response, 0, response.Length);
+        }
+
+        public void GetLoginAuthentication(RequestHandler p, bool authentication)
+        {
+            Header header = new ResponseHeader();
+            var jSerializer = new JavaScriptSerializer();
+            string json = jSerializer.Serialize(new { Authentication = authentication });
             header.SetHeader("ContentType", p.requestHeader.Headers["Accept"]);
             byte[] response = Encoding.ASCII.GetBytes(json);
             header.SetHeader("ContentLength", response.Length.ToString());
