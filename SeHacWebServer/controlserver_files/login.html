@@ -3,12 +3,43 @@
 	<title>Control Server</title>
 	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script>
-	var domain = "https://"+document.domain+":"+location.port;
-	$( document ).ready(function() {
-		var user = $('#username').val();
-		var pass = $('#password').val();
+	
+	function checkCookie()
+	{
+		var session=getCookie("SessionID");
+		alert("checkCookie"+session);
+		if (session!="") {
+			alert("Welkom terug kut");
+		}
+		//gebruiker is nog ingelogd -> redirect naar main Yo
+	}
+	function getCookie(value) {
+		var session = value + "=";
+		var ca = document.cookie.split(',');
+		for(var i=0; i<ca.length; i++) {
+			var c = ca[i].trim();
+			if (c.indexOf(session) == 0) return c.substring(session.length,c.length);
+		}
+    return "";
+}
+	function setCookie(value)
+	{
+		var now = new Date();
+		var time = now.getTime();
+		time += 3600 * 1000;
+		now.setTime(time);
+		alert(value);
+		document.cookie = 
+			'SessionID=' + value + 
+			', expires=' + now.toGMTString() + 
+			', path=/';
+			
+	}
 
+	$( document ).ready(function() {
+		checkCookie();
 		$("#doLogin").click(function (event) {
+			var domain = "https://"+document.domain+":"+location.port;
 			$.ajax({
 	            url: domain+"/postLogin",
 	            type: "POST",
@@ -17,6 +48,13 @@
 				success: function(data, textStatus, jqXHR)
 				{
 					alert(data.Authentication);
+					if(data.Authentication == true)
+					{
+						setCookie(data.SessionID);
+						//document.cookie = data.SessionID;
+					}else{
+						document.getElementById("Error").innerHTML = "Uw gebruikersnaam of wachtwoord is niet goed";
+					}
 					//data - response from server
 				},
 				error: function (jqXHR, textStatus, errorThrown)
@@ -37,6 +75,8 @@
 		<input type="button" id="doLogin" name="doLogin" value="Inloggen">
 		</p>
 		</form>
+		<p id ="Error">
+		</p>
 	</div>
 	<div></div>
 </body>

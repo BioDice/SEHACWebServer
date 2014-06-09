@@ -60,7 +60,7 @@ namespace SeHacWebServer
 
         public void handleGETRequest()
         {
-            srv.handleGETRequest(this.stream, http_url);
+            srv.handleGETRequest(this, http_url);
         }
 
         private string streamReadLine(Stream inputStream)
@@ -162,7 +162,7 @@ namespace SeHacWebServer
                 ms.Seek(0, SeekOrigin.Begin);
             }
             Console.WriteLine("get post data end");
-            srv.handlePOSTRequest(this.stream, new StreamReader(ms), http_url);
+            srv.handlePOSTRequest(this, new StreamReader(ms), http_url);
         }
 
         public void LogRequest()

@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Net;
 using SeHacWebServer.Database;
 using System.Web.Script.Serialization;
+using System.Text.RegularExpressions;
 
 namespace SeHacWebServer
 {
@@ -57,7 +58,7 @@ namespace SeHacWebServer
             return stream;
         }
 
-        public override void handlePOSTRequest(Stream stream, StreamReader inputData, string url)
+        public override void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url)
         {
             // handle ajax calls
             if (router.CheckAjaxRoutes(url) != null)
@@ -65,37 +66,41 @@ namespace SeHacWebServer
                 switch (router.CheckAjaxRoutes(url))
                 {
                     case "FormValues":
-                        GetFormValues(stream, url);
+                        GetFormValues(p.stream, url);
                         break;
                     case "LogFiles":
-                        OpenLogFile(stream);
-                        
+                        OpenLogFile(p.stream);
+
                         break;
                     case "LoginValues":
-                        Authenticate(stream, inputData);
+                        Authenticate(p.stream, inputData);
+                        break;
+
+                    case "AuthenticateRequest":
+                        //derp
                         break;
                 }
             }
             else
             {
                 // handle form post
-                PostControlForm(stream, inputData, url);
+                PostControlForm(p.stream, inputData, url);
             }
             m_ServerSemaphore.Release();
         }
 
-        /// <summary>
-        /// Authenticate de huidige gebruiker
-        /// Als het goed is gegaan moet je redirecten naar de main.html
-        /// </summary>
-        /// <param name="rHandler">De huidige requesthandler</param>
+        /// <param name="inputData">User en Password van form</param>
         public void Authenticate(Stream stream, StreamReader inputData)
         {
             Dictionary<string, string> data = ParsePostData(inputData);
-            if (UserAuthentication.Authenticate(data.ElementAt(0).Value, data.ElementAt(1).Value))
-                GetLoginAuthentication(stream, true);
+            string user = data.ElementAt(0).Value;
+            if (UserAuthentication.Authenticate(user, data.ElementAt(1).Value))
+            {
+                SessionManager.addSession(user);
+                GetLoginAuthentication(stream, true, user);
+            }
             else
-                GetLoginAuthentication(stream, false);
+                GetLoginAuthentication(stream, false, user);
         }
 
         public void PostControlForm(Stream stream, StreamReader inputData, string url)
@@ -172,11 +177,19 @@ namespace SeHacWebServer
             stream.Write(response, 0, response.Length);
         }
 
-        public void GetLoginAuthentication(Stream stream, bool authentication)
+        public void GetLoginAuthentication(Stream stream, bool authentication, string user)
         {
             Header header = new ResponseHeader();
             var jSerializer = new JavaScriptSerializer();
-            string json = jSerializer.Serialize(new { Authentication = authentication, Key = "" });
+            string json = "";
+            if (authentication.Equals(true))
+            {
+                string sessionId = SessionManager.getSessionId(user);
+                json = jSerializer.Serialize(new { Authentication = authentication, SessionID = sessionId });
+
+            }
+            else
+                json = jSerializer.Serialize(new { Authentication = authentication });
             header.SetHeader("ContentType", "text/html");
             byte[] response = Encoding.ASCII.GetBytes(json);
             header.SetHeader("ContentLength", response.Length.ToString());

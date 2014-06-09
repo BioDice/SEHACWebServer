@@ -63,6 +63,7 @@
     <Compile Include="Database\UserAuthentication.cs" />
     <Compile Include="Model\ErrorPageHandler.cs" />
     <Compile Include="Model\Statics.cs" />
+    <Compile Include="Model\Session.cs" />
     <Compile Include="XMLModels\Extension.cs" />
     <Compile Include="Model\JSONParser.cs" />
     <Compile Include="Servers\ControlServer.cs" />
