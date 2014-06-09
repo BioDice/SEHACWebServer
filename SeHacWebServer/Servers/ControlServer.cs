@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using System.Net;
 using SeHacWebServer.Database;
 using System.Web.Script.Serialization;
+using System.Text.RegularExpressions;
 
 namespace SeHacWebServer
 {
@@ -74,6 +75,10 @@ namespace SeHacWebServer
                     case "LoginValues":
                         Authenticate(p, inputData);
                         break;
+
+                    case "AuthenticateRequest":
+                        //derp
+                        break;
                 }
             }
             else
@@ -89,13 +94,18 @@ namespace SeHacWebServer
         /// Als het goed is gegaan moet je redirecten naar de main.html
         /// </summary>
         /// <param name="rHandler">De huidige requesthandler</param>
+        /// <param name="inputData">User en Password van form</param>
         public void Authenticate(RequestHandler rHandler, StreamReader inputData)
         {
             Dictionary<string, string> data = ParsePostData(inputData);
-            if (UserAuthentication.Authenticate(data.ElementAt(0).Value, data.ElementAt(1).Value))
-                GetLoginAuthentication(rHandler, true);
+            string user = data.ElementAt(0).Value;
+            if (UserAuthentication.Authenticate(user, data.ElementAt(1).Value))
+            {
+                SessionManager.addSession(user);
+                GetLoginAuthentication(rHandler, true, user);
+            }
             else
-                GetLoginAuthentication(rHandler, false);
+                GetLoginAuthentication(rHandler, false,user);
         }
 
         public void PostControlForm(RequestHandler p, StreamReader inputData, string url)
@@ -172,11 +182,22 @@ namespace SeHacWebServer
             p.stream.Write(response, 0, response.Length);
         }
 
-        public void GetLoginAuthentication(RequestHandler p, bool authentication)
+        public void GetLoginAuthentication(RequestHandler p, bool authentication,string user)
         {
             Header header = new ResponseHeader();
             var jSerializer = new JavaScriptSerializer();
-            string json = jSerializer.Serialize(new { Authentication = authentication });
+            string json = "";
+            if (authentication.Equals(true))
+            {
+                string sessionId = SessionManager.getSessionId(user);
+                json = jSerializer.Serialize(new { Authentication = authentication, SessionID = sessionId });
+      
+            }
+            else
+            {
+                json = jSerializer.Serialize(new { Authentication = authentication });
+
+            }
             header.SetHeader("ContentType", p.requestHeader.Headers["Accept"]);
             byte[] response = Encoding.ASCII.GetBytes(json);
             header.SetHeader("ContentLength", response.Length.ToString());
