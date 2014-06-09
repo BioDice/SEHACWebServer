@@ -50,7 +50,7 @@ namespace SeHacWebServer.Model
             byte[] response = Encoding.ASCII.GetBytes(dirs);
             header.SetHeader("ContentLength", response.Length.ToString());
             header.SetHeader("ContentType", @"text\html");
-            Statics.SendHeader(header, stream);
+            SendContentHandler.SendHeader(header, stream);
             stream.Write(response, 0, response.Length);
         }
     }

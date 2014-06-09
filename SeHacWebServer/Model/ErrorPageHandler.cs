@@ -28,7 +28,7 @@ namespace SeHacWebServer.Model
                 byte[] response = Encoding.ASCII.GetBytes(content);
                 header.Status = code;
                 header.SetHeader("ContentLength", response.Length.ToString());
-                Statics.SendHeader(header, stream);
+                SendContentHandler.SendHeader(header, stream);
                 stream.Write(response, 0, response.Length);
             }
         }

@@ -42,24 +42,28 @@ namespace SeHacWebServer
             m_ServerSemaphore.Release();
         }
 
-        public override Stream GetStream(TcpClient client)
+        public override void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url) 
+        {
+            Header header = new ResponseHeader();
+            string path = router.CheckRoutes(url, p.stream);
+            //Console.WriteLine("POST request: {0}", p.http_url);
+            Dictionary<string, string> data = ParsePostData(inputData);
+            byte[] bytes = WritePost(data, path, p.stream);
+            header.SetHeader("ContentLength", bytes.Length.ToString());
+            header.SetHeader("ContentType", "text/html");
+            SendContentHandler.SendHeader(header, p.stream);
+            SendContentHandler.SendContent(bytes, p.stream);
+            m_ServerSemaphore.Release();
+        }
+
+        protected override Stream GetStream(TcpClient client)
         {
             return client.GetStream();
         }
 
-        public override void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url) 
+        private byte[] WritePost(Dictionary<string, string> data, string path, Stream stream)
         {
             
-            string path = router.CheckRoutes(url, p.stream);
-            //Console.WriteLine("POST request: {0}", p.http_url);
-            Dictionary<string, string> data = ParsePostData(inputData);
-            WritePost(data, path, p.stream);
-            m_ServerSemaphore.Release();
-        }
-
-        public void WritePost(Dictionary<string, string> data, string path, Stream stream)
-        {
-            Header header = new ResponseHeader();
             StringBuilder sb = new StringBuilder();
             using (StreamReader sr = new StreamReader(path))
             {
@@ -74,14 +78,10 @@ namespace SeHacWebServer
                 sb.Replace("{{ "+ entry.Key +" }}", entry.Value);
             }
             
-            byte[] bytes = Encoding.ASCII.GetBytes(sb.ToString());
-            header.SetHeader("ContentLength", bytes.Length.ToString());
-            header.SetHeader("ContentType", "text/html");
-            Statics.SendHeader(header, stream);
-            stream.Write(bytes, 0, bytes.Length);
+            return Encoding.ASCII.GetBytes(sb.ToString());
         }
 
-        protected void WritePost(Stream stream, string path)
+        private void WritePost(Stream stream, string path)
         {
             Header header = new ResponseHeader();
             const int chunkSize = 1024;
@@ -89,19 +89,14 @@ namespace SeHacWebServer
             {
                 header.SetHeader("ContentLength", file.Length.ToString());
                 header.SetHeader("ContentType", "text/html");
-                Statics.SendHeader(header, stream);
+                SendContentHandler.SendHeader(header, stream);
                 int bytesRead;
                 var buffer = new byte[chunkSize];
                 while ((bytesRead = file.Read(buffer, 0, buffer.Length)) > 0)
                 {
-                    SendChunk(bytesRead, buffer, stream);
+                    SendContentHandler.SendChunk(bytesRead, buffer, stream);
                 }
             }
-        }
-
-        private void SendChunk(int bytesRead, byte[] buffer, Stream stream)
-        {
-            stream.Write(buffer, 0, bytesRead);
         }
     }
 }

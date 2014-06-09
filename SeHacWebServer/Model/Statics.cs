@@ -10,13 +10,5 @@ namespace SeHacWebServer.Model
     public class Statics
     {
         public static string Root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
-
-        public static void SendHeader(Header header, Stream stream)
-        {
-            string sBuffer = "";
-            sBuffer = header.ToString();
-            stream.Write(Encoding.ASCII.GetBytes(sBuffer), 0, sBuffer.Length);
-            stream.Flush();
-        }
     }
 }

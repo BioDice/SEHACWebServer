@@ -41,7 +41,7 @@ namespace SeHacWebServer
             m_ServerSemaphore.Release();
         }
 
-        public override Stream GetStream(TcpClient client)
+        protected override Stream GetStream(TcpClient client)
         {
             SslStream stream = null;
             try
@@ -70,7 +70,6 @@ namespace SeHacWebServer
                         break;
                     case "LogFiles":
                         OpenLogFile(p.stream);
-
                         break;
                     case "LoginValues":
                         Authenticate(p.stream, inputData);
@@ -162,7 +161,7 @@ namespace SeHacWebServer
 
             header.SetHeader("ContentLength", bytes.Length.ToString());
             header.SetHeader("ContentType", "text/html");
-            Statics.SendHeader(header, stream);
+            SendContentHandler.SendHeader(header, stream);
             stream.Write(bytes, 0, bytes.Length);
         }
 
@@ -173,7 +172,7 @@ namespace SeHacWebServer
             header.SetHeader("ContentType", "text/html");
             byte[] response = Encoding.ASCII.GetBytes(json);
             header.SetHeader("ContentLength", response.Length.ToString());
-            Statics.SendHeader(header, stream);
+            SendContentHandler.SendHeader(header, stream);
             stream.Write(response, 0, response.Length);
         }
 
@@ -193,7 +192,7 @@ namespace SeHacWebServer
             header.SetHeader("ContentType", "text/html");
             byte[] response = Encoding.ASCII.GetBytes(json);
             header.SetHeader("ContentLength", response.Length.ToString());
-            Statics.SendHeader(header, stream);
+            SendContentHandler.SendHeader(header, stream);
             stream.Write(response, 0, response.Length);
         }
 
@@ -212,7 +211,7 @@ namespace SeHacWebServer
             byte[] response = Encoding.ASCII.GetBytes(sb.ToString());
             header.SetHeader("ContentType", "text/html");
             header.SetHeader("ContentLength", response.Length.ToString());
-            Statics.SendHeader(header, stream);
+            SendContentHandler.SendHeader(header, stream);
             stream.Write(response, 0, response.Length);
         }
     }
