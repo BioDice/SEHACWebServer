@@ -18,7 +18,8 @@ namespace SeHacWebServer.Model
 
         public override string CheckRoutes(string url)
         {
-            string path = server.settings.webRoot + url;
+            string[] segments = url.Split('&');
+            string path = server.settings.webRoot + segments[0];
             if (url == "/")
             {
                 path = server.settings.webRoot + "/" + server.settings.defaultPage;

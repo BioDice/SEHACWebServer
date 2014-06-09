@@ -22,7 +22,7 @@ namespace SeHacWebServer
         {
             try
             {
-                string path = router.CheckRoutes(url);
+               string path = router.CheckRoutes(url);
                 if (!Directory.Exists(path))
                     WritePost(p, path);
                 else if (Boolean.Parse(settings.dirListing))
@@ -66,7 +66,7 @@ namespace SeHacWebServer
                 String line;
                 while ((line = sr.ReadLine()) != null)
                 {
-                    sb.AppendLine(line);
+                    sb.AppendLine(line + "<br />");
                 }
             }
             foreach (KeyValuePair<string, string> entry in data)
