@@ -4,5 +4,5 @@
   <controlPort>8081</controlPort>
   <webRoot>C:/webserver</webRoot>
   <defaultPage>index.html</defaultPage>
-  <dirListing>false</dirListing>
+  <dirListing>true</dirListing>
 </serverSettings>

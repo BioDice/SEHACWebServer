@@ -29,8 +29,8 @@ namespace SeHacWebServer
         {
             try
             {
-                string route = router.CheckRoutes(url);
-                WritePost(p, route);
+                string route = router.CheckRoutes(url, p.stream);
+                WritePost(p.stream, route);
             }
             catch (IOException ex)
             {
@@ -57,7 +57,7 @@ namespace SeHacWebServer
             return stream;
         }
 
-        public override void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url)
+        public override void handlePOSTRequest(Stream stream, StreamReader inputData, string url)
         {
             // handle ajax calls
             if (router.CheckAjaxRoutes(url) != null)
@@ -65,21 +65,21 @@ namespace SeHacWebServer
                 switch (router.CheckAjaxRoutes(url))
                 {
                     case "FormValues":
-                        GetFormValues(p, url);
+                        GetFormValues(stream, url);
                         break;
                     case "LogFiles":
-                        OpenLogFile(p);
+                        OpenLogFile(stream);
                         
                         break;
                     case "LoginValues":
-                        Authenticate(p, inputData);
+                        Authenticate(stream, inputData);
                         break;
                 }
             }
             else
             {
                 // handle form post
-                PostControlForm(p, inputData, url);
+                PostControlForm(stream, inputData, url);
             }
             m_ServerSemaphore.Release();
         }
@@ -89,22 +89,22 @@ namespace SeHacWebServer
         /// Als het goed is gegaan moet je redirecten naar de main.html
         /// </summary>
         /// <param name="rHandler">De huidige requesthandler</param>
-        public void Authenticate(RequestHandler rHandler, StreamReader inputData)
+        public void Authenticate(Stream stream, StreamReader inputData)
         {
             Dictionary<string, string> data = ParsePostData(inputData);
             if (UserAuthentication.Authenticate(data.ElementAt(0).Value, data.ElementAt(1).Value))
-                GetLoginAuthentication(rHandler, true);
+                GetLoginAuthentication(stream, true);
             else
-                GetLoginAuthentication(rHandler, false);
+                GetLoginAuthentication(stream, false);
         }
 
-        public void PostControlForm(RequestHandler p, StreamReader inputData, string url)
+        public void PostControlForm(Stream stream, StreamReader inputData, string url)
         {
-            Console.WriteLine("POST request: {0}", p.http_url);
+            //Console.WriteLine("POST request: {0}", p.http_url);
             Dictionary<string, string> data = ParsePostData(inputData);
             UpdateSettingsModel(data);
-            string route = router.CheckRoutes(url);
-            WritePost(p, route);
+            string route = router.CheckRoutes(url, stream);
+            WritePost(stream, route);
         }
 
         public void UpdateSettingsModel(Dictionary<string, string> dict)
@@ -138,7 +138,7 @@ namespace SeHacWebServer
             this.settings = settings;
         }
 
-        public void WritePost(RequestHandler p, string path)
+        public void WritePost(Stream stream, string path)
         {
             Header header = new ResponseHeader();
             string sResponse = "";
@@ -157,38 +157,38 @@ namespace SeHacWebServer
 
             header.SetHeader("ContentLength", bytes.Length.ToString());
             header.SetHeader("ContentType", "text/html");
-            p.SendHeader(header);
-            p.stream.Write(bytes, 0, bytes.Length);
+            Statics.SendHeader(header, stream);
+            stream.Write(bytes, 0, bytes.Length);
         }
 
-        public void GetFormValues(RequestHandler p, string url)
+        public void GetFormValues(Stream stream, string url)
         {
             Header header = new ResponseHeader();
             string json = JSONParser.SerializeJSON(settings);
-            header.SetHeader("ContentType", p.requestHeader.Headers["Accept"]);
+            header.SetHeader("ContentType", "text/html");
             byte[] response = Encoding.ASCII.GetBytes(json);
             header.SetHeader("ContentLength", response.Length.ToString());
-            p.SendHeader(header);
-            p.stream.Write(response, 0, response.Length);
+            Statics.SendHeader(header, stream);
+            stream.Write(response, 0, response.Length);
         }
 
-        public void GetLoginAuthentication(RequestHandler p, bool authentication)
+        public void GetLoginAuthentication(Stream stream, bool authentication)
         {
             Header header = new ResponseHeader();
             var jSerializer = new JavaScriptSerializer();
-            string json = jSerializer.Serialize(new { Authentication = authentication });
-            header.SetHeader("ContentType", p.requestHeader.Headers["Accept"]);
+            string json = jSerializer.Serialize(new { Authentication = authentication, Key = "" });
+            header.SetHeader("ContentType", "text/html");
             byte[] response = Encoding.ASCII.GetBytes(json);
             header.SetHeader("ContentLength", response.Length.ToString());
-            p.SendHeader(header);
-            p.stream.Write(response, 0, response.Length);
+            Statics.SendHeader(header, stream);
+            stream.Write(response, 0, response.Length);
         }
 
-        public void OpenLogFile(RequestHandler p)
+        public void OpenLogFile(Stream stream)
         {
             Header header = new ResponseHeader();
             StringBuilder sb = new StringBuilder();
-            using (StreamReader sr = new StreamReader(root + @"/Logfiles/ControlServer.log.txt"))
+            using (StreamReader sr = new StreamReader(Statics.Root + @"/Logfiles/ControlServer.log.txt"))
             {
                 String line;
                 while ((line = sr.ReadLine()) != null)
@@ -197,10 +197,10 @@ namespace SeHacWebServer
                 }
             }
             byte[] response = Encoding.ASCII.GetBytes(sb.ToString());
-            header.SetHeader("ContentType", p.requestHeader.Headers["Accept"]);
+            header.SetHeader("ContentType", "text/html");
             header.SetHeader("ContentLength", response.Length.ToString());
-            p.SendHeader(header);
-            p.stream.Write(response, 0, response.Length);
+            Statics.SendHeader(header, stream);
+            stream.Write(response, 0, response.Length);
         }
     }
 }
