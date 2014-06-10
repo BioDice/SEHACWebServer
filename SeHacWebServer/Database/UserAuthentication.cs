@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SeHacWebServer.Properties;
 using System.Text.RegularExpressions;
+using Microsoft.Security.Application;
 
 namespace SeHacWebServer.Database
 {
@@ -55,7 +56,7 @@ namespace SeHacWebServer.Database
         }
 
         /// <summary>
-        /// Method to encrypt a password
+        /// Method to encrypt a password with the EncryptionKey
         /// </summary>
         /// <param name="clearText">password to Encrypt</param>
         /// <returns></returns>
