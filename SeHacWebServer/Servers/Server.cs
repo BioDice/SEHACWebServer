@@ -1,4 +1,5 @@
 ﻿using SeHacWebServer.Model;
+using SeHacWebServer.XMLModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,12 +25,14 @@ namespace SeHacWebServer
         protected string serverName { get; set; }
         protected Router router { get; set; }
         public ErrorPageHandler errorHandler { get; set; }
+        protected ExtensionsModel ext { get; set; }
 
         public Server(int port)
         {
             this.port = port;
             m_ServerSemaphore = new Semaphore(20,20);
             errorHandler = new ErrorPageHandler();
+            ext = XMLParser.DeserializeExtensionXML();
         }
 
         public void StartServer()
@@ -52,7 +55,7 @@ namespace SeHacWebServer
                 Stream stream = GetStream(client);
 
                 String ip = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
-                RequestHandler newRequest = new RequestHandler(ip,this, stream);
+                RequestHandler newRequest = new RequestHandler(ip, this, stream);
                 Thread Thread = new Thread(new ThreadStart(newRequest.Process));
                 Thread.Name = "HTTP Request";
                 Thread.Start();
@@ -93,6 +96,12 @@ namespace SeHacWebServer
                 data.Add(temp[0], temp[1]);
             }
             return data;
+        }
+
+        protected string GetFileExtensionFromString(string path)
+        {
+            string[] str = path.Split('.');
+            return str[1].Split('?')[0];
         }
     } 
 }

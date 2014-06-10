@@ -13,7 +13,7 @@ namespace SeHacWebServer
         static void Main(string[] args)
         {
             new Logger();
-            SettingsModel settings = XMLParser.DeserializeXML();
+            SettingsModel settings = XMLParser.DeserializeSettingsXML();
             Server httpServer = new HttpServer(settings);
             httpServer.StartServer();
             Server controlServer = new ControlServer(settings);

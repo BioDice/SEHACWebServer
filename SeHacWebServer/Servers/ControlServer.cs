@@ -168,7 +168,7 @@ namespace SeHacWebServer
                         break;
                 }
             }
-            XMLParser.SerializeXML(settings);
+            XMLParser.SerializeSettingsXML(settings);
             this.settings = settings;
         }
 

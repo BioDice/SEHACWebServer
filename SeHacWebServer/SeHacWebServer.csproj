@@ -104,8 +104,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>UserDbDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="Visitor\HeaderVisitor.cs" />
-    <Compile Include="Visitor\RouteVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config">

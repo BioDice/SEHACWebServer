@@ -9,14 +9,10 @@ using System.Xml.Serialization;
 namespace SeHacWebServer.XMLModels
 {
     [Serializable]
-    [XmlRoot("validextensions")]
+    [XmlRoot("ValidExtensions")]
     public class ExtensionsModel
     {
-        public List<Extension> extensions;
-
-        public ExtensionsModel()
-        {
-            extensions = new List<Extension>();
-        }
+        [XmlArray("Extensions")]
+        public List<Extension> extensions = new List<Extension>();
     }
 }

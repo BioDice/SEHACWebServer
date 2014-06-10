@@ -30,8 +30,9 @@ namespace SeHacWebServer
                         Header header = new ResponseHeader();
                         Dictionary<string, string> data = ParseGetData(url);
                         byte[] bytes = WritePost(data, path.Split('?')[0], p.stream);
+                        string extension = GetFileExtensionFromString(path);
                         header.SetHeader("ContentLength", bytes.Length.ToString());
-                        header.SetHeader("ContentType", "text/html");
+                        header.SetHeader("ContentType", ext.extensions.Where(x => x.ext == extension).FirstOrDefault().content);
                         SendContentHandler.SendHeader(header, p.stream);
                         SendContentHandler.SendContent(bytes, p.stream);
                     }
@@ -39,7 +40,7 @@ namespace SeHacWebServer
                         WritePost(p.stream, path);
                 }
             }
-            catch (IOException ex)
+            catch (Exception ex)
             {
                 Console.WriteLine("File not Found");
                 errorHandler.SendErrorPage(p.stream, 404);
@@ -54,8 +55,9 @@ namespace SeHacWebServer
             //Console.WriteLine("POST request: {0}", p.http_url);
             Dictionary<string, string> data = ParsePostData(inputData);
             byte[] bytes = WritePost(data, path, p.stream);
+            string extension = GetFileExtensionFromString(url);
             header.SetHeader("ContentLength", bytes.Length.ToString());
-            header.SetHeader("ContentType", "text/html");
+            header.SetHeader("ContentType", ext.extensions.Where(x => x.ext == extension).FirstOrDefault().content);
             SendContentHandler.SendHeader(header, p.stream);
             SendContentHandler.SendContent(bytes, p.stream);
             m_ServerSemaphore.Release();
@@ -78,12 +80,12 @@ namespace SeHacWebServer
                 {
                     sb.AppendLine(line);
                 }
+                foreach (KeyValuePair<string, string> entry in data)
+                {
+                    sb.Replace("{{ " + entry.Key + " }}", entry.Value);
+                }
             }
-            foreach (KeyValuePair<string, string> entry in data)
-            {
-                sb.Replace("{{ "+ entry.Key +" }}", entry.Value);
-            }
-            
+
             return Encoding.ASCII.GetBytes(sb.ToString());
         }
 
@@ -94,8 +96,9 @@ namespace SeHacWebServer
             const int chunkSize = 1024;
             using (var file = File.OpenRead(path))
             {
+                string extension = Path.GetExtension(file.Name).Replace(".", "");
                 header.SetHeader("ContentLength", file.Length.ToString());
-                header.SetHeader("ContentType", "text/html");
+                header.SetHeader("ContentType", ext.extensions.Where(x => x.ext == extension).FirstOrDefault().content);
                 SendContentHandler.SendHeader(header, stream);
                 int bytesRead;
                 var buffer = new byte[chunkSize];
