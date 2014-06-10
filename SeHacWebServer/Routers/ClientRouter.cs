@@ -25,9 +25,9 @@ namespace SeHacWebServer.Model
             if (url == "/")
             {
                 if (Boolean.Parse(server.settings.dirListing))
-                    SendDirectories(stream, DirectoryListing.Generate(path, server.settings.webRoot));
+                    SendContentHandler.SendDirectories(stream, DirectoryListing.Generate(path, server.settings.webRoot));
                 else
-                    path = server.settings.webRoot + "/" + server.settings.defaultPage;
+                    return server.settings.webRoot + "/" + server.settings.defaultPage;
             }
             else if (File.Exists(path))
             {
@@ -35,23 +35,16 @@ namespace SeHacWebServer.Model
             }
             else if (Directory.Exists(path))
             {
-                SendDirectories(stream, DirectoryListing.Generate(path, server.settings.webRoot));
+                if (Boolean.Parse(server.settings.dirListing))
+                    SendContentHandler.SendDirectories(stream, DirectoryListing.Generate(path, server.settings.webRoot));
+                else
+                    errorHandler.SendErrorPage(stream, 403);
             }
             else
             {
                 errorHandler.SendErrorPage(stream, 404);
             }
             return null;
-        }
-
-        public void SendDirectories(Stream stream, string dirs)
-        {
-            Header header = new ResponseHeader();
-            byte[] response = Encoding.ASCII.GetBytes(dirs);
-            header.SetHeader("ContentLength", response.Length.ToString());
-            header.SetHeader("ContentType", @"text\html");
-            SendContentHandler.SendHeader(header, stream);
-            stream.Write(response, 0, response.Length);
         }
     }
 }
