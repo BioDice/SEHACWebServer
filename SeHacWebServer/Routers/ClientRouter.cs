@@ -18,14 +18,14 @@ namespace SeHacWebServer.Model
             this.errorHandler = new ErrorPageHandler();
         }
 
-        public override string CheckRoutes(string url, Stream stream)
+        public override string CheckRoutes(string url, RequestHandler r)
         {
             string[] segments = url.Split('?');
             string path = server.settings.webRoot + segments[0];
             if (url == "/")
             {
                 if (Boolean.Parse(server.settings.dirListing))
-                    SendContentHandler.SendDirectories(stream, DirectoryListing.Generate(path, server.settings.webRoot));
+                    SendContentHandler.SendDirectories(r.stream, DirectoryListing.Generate(path, server.settings.webRoot));
                 else
                     return server.settings.webRoot + "/" + server.settings.defaultPage;
             }
@@ -36,13 +36,13 @@ namespace SeHacWebServer.Model
             else if (Directory.Exists(path))
             {
                 if (Boolean.Parse(server.settings.dirListing))
-                    SendContentHandler.SendDirectories(stream, DirectoryListing.Generate(path, server.settings.webRoot));
+                    SendContentHandler.SendDirectories(r.stream, DirectoryListing.Generate(path, server.settings.webRoot));
                 else
-                    errorHandler.SendErrorPage(stream, 403);
+                    errorHandler.SendErrorPage(r.stream, 403);
             }
             else
             {
-                errorHandler.SendErrorPage(stream, 404);
+                errorHandler.SendErrorPage(r.stream, 404);
             }
             return null;
         }

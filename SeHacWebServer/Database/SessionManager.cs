@@ -42,6 +42,7 @@ namespace SeHacWebServer.Database
             }
         }
 
+
         /// <summary>
         /// check if the current session token exists
         /// </summary>
@@ -49,13 +50,37 @@ namespace SeHacWebServer.Database
         /// <returns></returns>
         public static bool SessionExists(String sessionid)
         {
-            string _cookies = sessionid.Split(new char[] { '=', ',' })[1];
-            return sessionList.Exists(x => x.SessionId == _cookies);
+            if (sessionid != null)
+            {
+                string _cookies = sessionid.Split(new char[] { '=', ',' })[1];
+                return sessionList.Exists(x => x.SessionId == _cookies);
+            }
+            return false;
         }
 
+        /// <summary>
+        /// gets the sessioniD from the user
+        /// </summary>
+        /// <param name="user"></param>
+        /// <returns></returns>
         public static string getSessionId(String user)
         {
+            var positiveIntRegex = new Regex(@"^\w+$");
+            if (!positiveIntRegex.IsMatch(user))
+            {
+                return null;
+            }
             return sessionList.Find(x=>x.User == user).SessionId;
+        }
+
+        /// <summary>
+        /// deletes te session with the given sessionId
+        /// </summary>
+        /// <param name="sessionId">the session id from the cookie</param>
+        public static void deleteSession(String sessionId)
+        {
+            string _cookies = sessionId.Split(new char[] { '=', ',' })[1];
+            sessionList.RemoveAll(x=>x.SessionId.Equals(sessionId));
         }
 
         /// <summary>
@@ -89,8 +114,6 @@ namespace SeHacWebServer.Database
             command.CommandType = CommandType.Text;
             command.Parameters.AddWithValue(@"UserName",user);
             con.Open();
-            //int userId = Convert.ToInt32(command.ExecuteScalar().ToString());
-            
 
             string type = "";
             if (command.ExecuteScalar() != null)
@@ -100,14 +123,12 @@ namespace SeHacWebServer.Database
             sessionList.Add(s);
 
             return s.SessionId;
-            //command.CommandText = "INSERT INTO Session VALUES(@id)";
-            //command.CommandType = CommandType.Text;
-            //command.Parameters.AddWithValue("@id", userId);
-            //con.Open();
-            //command.ExecuteNonQuery();
-            //con.Close();
         }
 
+        /// <summary>
+        /// generates a unique GUID
+        /// </summary>
+        /// <returns>a numeric GUID</returns>
         private static string generateSessionId()
         {
             return System.Guid.NewGuid().ToString("N");

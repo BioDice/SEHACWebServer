@@ -30,7 +30,7 @@ namespace SeHacWebServer
         {
             try
             {
-                string route = router.CheckRoutes(url, p.stream);
+                string route = router.CheckRoutes(url, p);
                 WritePost(p.stream, route);
             }
             catch (IOException ex)
@@ -88,11 +88,11 @@ namespace SeHacWebServer
             {
                 if (SessionManager.SessionExists(bs) && SessionManager.isAdmin(bs))
                 {
-                    PostControlForm(p.stream, inputData, url);
+                    PostControlForm(p, inputData, url);
                 }
                 else
                 {
-                    string route = router.CheckRoutes(url, p.stream);
+                    string route = router.CheckRoutes(url, p);
                     WritePost(p.stream, route);
                 }
                 // handle form post
@@ -114,13 +114,13 @@ namespace SeHacWebServer
                 GetLoginAuthentication(stream, false, user);
         }
 
-        public void PostControlForm(Stream stream, StreamReader inputData, string url)
+        public void PostControlForm(RequestHandler r, StreamReader inputData, string url)
         {
             //Console.WriteLine("POST request: {0}", p.http_url);
             Dictionary<string, string> data = ParsePostData(inputData);
             UpdateSettingsModel(data);
-            string route = router.CheckRoutes(url, stream);
-            WritePost(stream, route);
+            string route = router.CheckRoutes(url, r);
+            WritePost(r.stream, route);
         }
 
         public void UpdateSettingsModel(Dictionary<string, string> dict)

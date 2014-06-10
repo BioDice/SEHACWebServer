@@ -22,7 +22,7 @@ namespace SeHacWebServer
         {
             try
             {
-                string path = router.CheckRoutes(url, p.stream);
+                string path = router.CheckRoutes(url, p);
                 if (path != null)
                 {
                     if (path.Contains('?'))
@@ -50,7 +50,7 @@ namespace SeHacWebServer
         public override void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url) 
         {
             Header header = new ResponseHeader();
-            string path = router.CheckRoutes(url, p.stream);
+            string path = router.CheckRoutes(url, p);
             //Console.WriteLine("POST request: {0}", p.http_url);
             Dictionary<string, string> data = ParsePostData(inputData);
             byte[] bytes = WritePost(data, path, p.stream);

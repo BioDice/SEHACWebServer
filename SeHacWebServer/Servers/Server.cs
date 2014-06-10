@@ -50,6 +50,7 @@ namespace SeHacWebServer
 
                 m_ServerSemaphore.WaitOne();
                 Stream stream = GetStream(client);
+
                 String ip = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
                 RequestHandler newRequest = new RequestHandler(ip,this, stream);
                 Thread Thread = new Thread(new ThreadStart(newRequest.Process));

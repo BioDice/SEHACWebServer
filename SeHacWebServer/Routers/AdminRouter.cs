@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SeHacWebServer.Database;
 
 namespace SeHacWebServer.Model
 {
@@ -22,14 +23,26 @@ namespace SeHacWebServer.Model
             ajaxCalls.Add("/postLogin","LoginValues");
         }
 
-        public override string CheckRoutes(string url, Stream stream)
+        public override string CheckRoutes(string url, RequestHandler r)
         {
-            if (url.Equals("/"))
+            string Cookies = "";
+            r.requestHeader.Headers.TryGetValue("Cookie", out Cookies);
+
+            if (SessionManager.SessionExists(Cookies))
             {
-                return root + @"/controlserver_files/login.html";
-            }else if(url.Equals("/main.html"))
-                return root + @"/controlserver_files/"+url;
-            return null;
+                return root + @"/controlserver_files/" + url;
+            }
+            else
+            {
+                return root + @"/controlserver_files/login.html"; 
+            }
+
+            //if (url.Equals("/"))
+            //{ 
+            //    return root + @"/controlserver_files/login.html";
+            //}else if(url.Equals("/main.html")&&SessionManager.SessionExists(Cookies))
+            //    return root + @"/controlserver_files/"+url;
+            //return null;
             // ORIGINEEL return root + @"/controlserver_files/main.html";
         }
 

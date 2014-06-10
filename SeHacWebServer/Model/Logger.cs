@@ -15,7 +15,6 @@ namespace SeHacWebServer
         private static String[] m_loggerQueue = new String[3];
         private static Semaphore m_loggerSemaphore = new Semaphore(3,3);
         private string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
-        ///////
 
         public Logger()
         {
@@ -27,7 +26,6 @@ namespace SeHacWebServer
         {
             //
             m_loggerSemaphore.WaitOne();
-            //threadsafe sup
             lock(m_loggerQueue)
             {
                 m_loggerQueue[++current] = logline;
@@ -39,8 +37,6 @@ namespace SeHacWebServer
         /// </summary>
         public void doLogging()
         {
-            
-            //TODO:moet een keer stoppen....bijv bij afsluiten van socket
             while (true)
             {
                 string logline = null;

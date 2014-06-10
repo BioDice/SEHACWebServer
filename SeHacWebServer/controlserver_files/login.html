@@ -8,23 +8,6 @@
 	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script>
 	var domain = "https://"+document.domain+":"+location.port;
-	function checkCookie()
-	{
-		var session=getCookie("SessionID");
-		if (session!="") {
-			window.location.replace(domain+"/main.html");
-		}
-		//gebruiker is nog ingelogd -> redirect naar main Yo
-	}
-	function getCookie(value) {
-		var session = value + "=";
-		var ca = document.cookie.split(',');
-		for(var i=0; i<ca.length; i++) {
-			var c = ca[i].trim();
-			if (c.indexOf(session) == 0) return c.substring(session.length,c.length);
-		}
-    return "";
-}
 	function setCookie(value)
 	{
 		var now = new Date();
@@ -40,8 +23,6 @@
 	}
 
 	$( document ).ready(function() {
-		checkCookie();
-		
 		$("#doLogin").click(function (event) {
 			event.preventDefault();
 			$.ajax({
