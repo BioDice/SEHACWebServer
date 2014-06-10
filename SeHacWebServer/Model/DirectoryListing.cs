@@ -18,21 +18,17 @@ namespace SeHacWebServer.Model
 
             for (int i = 0; i < dirList.Length; i++)
             {
-                String dir = dirList[i];
-
-                html += "<li><a href=\"." + dir.Substring(root.Length).Replace("\\", "/") + "\">" + dir.Substring(pathString.Length) + "</a></li>";
+                String dir = @dirList[i];
+                string str = dir.Substring(pathString.Length).Replace("\\", "/");
+                //if (.
+                html += "<li><a href=\"" + dir.Substring(root.Length).Replace("\\", "/") + "\">" + dir.Substring(pathString.Length) + "</a></li>";
             }
             for (int i = 0; i < fileList.Length; i++)
             {
                 String file = fileList[i];
 
-                html += "<li><a href=\"." + file.Substring(root.Length).Replace("\\", "/") + "\">" + file.Substring(pathString.Length) + "</a></li>";
+                html += "<li><a href=\"" + file.Substring(root.Length).Replace("\\", "/") + "\">" + file.Substring(pathString.Length) + "</a></li>";
             }
-
-            /*if (html.Length == 4)
-            {
-                //Directory is leeg...
-            }*/
 
             html += "</ul></body></html>";
 

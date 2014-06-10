@@ -27,8 +27,13 @@ namespace SeHacWebServer
                 {
                     if (path.Contains('?'))
                     {
+                        Header header = new ResponseHeader();
                         Dictionary<string, string> data = ParseGetData(url);
-                        WritePost(data, path.Split('?')[0], p.stream);
+                        byte[] bytes = WritePost(data, path.Split('?')[0], p.stream);
+                        header.SetHeader("ContentLength", bytes.Length.ToString());
+                        header.SetHeader("ContentType", "text/html");
+                        SendContentHandler.SendHeader(header, p.stream);
+                        SendContentHandler.SendContent(bytes, p.stream);
                     }
                     else
                         WritePost(p.stream, path);
@@ -61,6 +66,7 @@ namespace SeHacWebServer
             return client.GetStream();
         }
 
+        // writes content for a form that is posted
         private byte[] WritePost(Dictionary<string, string> data, string path, Stream stream)
         {
             
@@ -81,6 +87,7 @@ namespace SeHacWebServer
             return Encoding.ASCII.GetBytes(sb.ToString());
         }
 
+        // writes content for just a request
         private void WritePost(Stream stream, string path)
         {
             Header header = new ResponseHeader();
