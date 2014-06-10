@@ -82,6 +82,9 @@ namespace SeHacWebServer
                     case "LoginValues":
                         Authenticate(p.stream, inputData);
                         break;
+                    case "LogoutValues":
+                        doLogout(p.stream,inputData);
+                        break;
                 }
             }
             else
@@ -112,6 +115,21 @@ namespace SeHacWebServer
             }
             else
                 GetLoginAuthentication(stream, false, user);
+        }
+
+        public void doLogout(Stream stream,StreamReader inputData)
+        {
+            Dictionary<string, string> data = ParsePostData(inputData);
+            SessionManager.deleteSession(data.ElementAt(0).Value);
+
+            Header header = new ResponseHeader();
+            var jSerializer = new JavaScriptSerializer();
+            string json = jSerializer.Serialize(new { Success = true });
+            header.SetHeader("ContentType", "text/html");
+            byte[] response = Encoding.ASCII.GetBytes(json);
+            header.SetHeader("ContentLength", response.Length.ToString());
+            SendContentHandler.SendHeader(header, stream);
+            stream.Write(response, 0, response.Length);
         }
 
         public void PostControlForm(RequestHandler r, StreamReader inputData, string url)

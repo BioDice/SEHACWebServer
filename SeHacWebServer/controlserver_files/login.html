@@ -14,7 +14,6 @@
 		var time = now.getTime();
 		time += 3600 * 1000;
 		now.setTime(time);
-		alert(value);
 		document.cookie = 
 			'SessionID=' + value + 
 			', expires=' + now.toGMTString() + 
@@ -32,7 +31,6 @@
 				data:$('#loginForm').serialize(),
 				success: function(data, textStatus, jqXHR)
 				{
-					alert(data.Authentication);
 					if(data.Authentication == true)
 					{
 						setCookie(data.SessionID);
@@ -64,7 +62,7 @@
       </form>
     </div>
   </section>
-
+	<div id="Error" style="color: red;"></div>
   <section class="about">
     <p class="about-author">
       &copy; 2014 Leon van Woezik en Martijn van Kreij

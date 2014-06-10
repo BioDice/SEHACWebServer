@@ -23,7 +23,7 @@ namespace SeHacWebServer
         protected Semaphore m_ServerSemaphore;
         protected string serverName { get; set; }
         protected Router router { get; set; }
-        protected ErrorPageHandler errorHandler { get; set; }
+        public ErrorPageHandler errorHandler { get; set; }
 
         public Server(int port)
         {

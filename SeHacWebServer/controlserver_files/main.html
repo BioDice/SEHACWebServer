@@ -3,6 +3,9 @@
 	<title>Control Server</title>
 	<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script>
+	function Delete_Cookie( name, path) {
+		document.cookie = name + "=" +( ( path ) ? ";path=" + path : "") +";expires=Thu, 01-Jan-1970 00:00:01 GMT";
+	}
 	var domain = "https://"+document.domain+":"+location.port;
 	$( document ).ready(function() {
 		var WebPort 	= $("#WebPort");
@@ -55,6 +58,24 @@
 	                alert("ERROR! --" + textStatus);
 	                console.log(textStatus, errorThrown);
 	            }
+	        });
+		});
+		
+		$("#logout").click(function (event) {
+			$.ajax({
+	            url: domain+"/postLogout",
+	            type: "POST",
+	            dataType: "json",
+				data:document.cookie,
+				success: function(data, textStatus, jqXHR)
+				{
+					Delete_Cookie('SessionID',"/");
+					window.location.replace(domain+"/login.html");
+				},
+				error: function (jqXHR, textStatus, errorThrown)
+				{
+					alert(textStatus);
+				}
 	        });
 		});
 	});

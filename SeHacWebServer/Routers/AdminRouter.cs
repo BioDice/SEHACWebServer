@@ -21,6 +21,7 @@ namespace SeHacWebServer.Model
             ajaxCalls.Add("/getFormValues", "FormValues");
             ajaxCalls.Add("/getLogFiles", "LogFiles");
             ajaxCalls.Add("/postLogin","LoginValues");
+            ajaxCalls.Add("/postLogout", "LogoutValues");
         }
 
         public override string CheckRoutes(string url, RequestHandler r)
@@ -30,20 +31,28 @@ namespace SeHacWebServer.Model
 
             if (SessionManager.SessionExists(Cookies))
             {
-                return root + @"/controlserver_files/" + url;
+                if (url.Equals("/"))
+                {
+                    return root + @"/controlserver_files/login.html";
+                }
+                else if (url.Equals("/main.html"))
+                {
+                    return root + @"/controlserver_files/main.html";
+                }
+                else
+                {
+                    server.errorHandler.SendErrorPage(r.stream, 404);
+                }
+            }
+            else if(url.Equals("/") || url.Equals("/login.html"))
+            {
+                return root + @"/controlserver_files/login.html";
             }
             else
             {
-                return root + @"/controlserver_files/login.html"; 
+                server.errorHandler.SendErrorPage(r.stream, 404);
             }
-
-            //if (url.Equals("/"))
-            //{ 
-            //    return root + @"/controlserver_files/login.html";
-            //}else if(url.Equals("/main.html")&&SessionManager.SessionExists(Cookies))
-            //    return root + @"/controlserver_files/"+url;
-            //return null;
-            // ORIGINEEL return root + @"/controlserver_files/main.html";
+            return null;
         }
 
         public override string CheckAjaxRoutes(string url)
