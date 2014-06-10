@@ -165,13 +165,6 @@ namespace SeHacWebServer
             srv.handlePOSTRequest(this, new StreamReader(ms), http_url);
         }
 
-        public void SendHeader(Header header)
-        {
-            string sBuffer = "";
-            sBuffer = header.ToString();
-            stream.Write(Encoding.ASCII.GetBytes(sBuffer), 0, sBuffer.Length);
-            stream.Flush();
-        }
         public void LogRequest()
         {
             requestTimer.Stop();

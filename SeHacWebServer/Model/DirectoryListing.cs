@@ -20,13 +20,13 @@ namespace SeHacWebServer.Model
             {
                 String dir = dirList[i];
 
-                html += "<li><a href=\"." + dir.Substring(root.Length).Replace("\\", "/") + "\">" + dir.Substring(pathString.Length + 1) + "</a></li>";
+                html += "<li><a href=\"." + dir.Substring(root.Length).Replace("\\", "/") + "\">" + dir.Substring(pathString.Length) + "</a></li>";
             }
             for (int i = 0; i < fileList.Length; i++)
             {
                 String file = fileList[i];
 
-                html += "<li><a href=\"." + file.Substring(root.Length).Replace("\\", "/") + "\">" + file.Substring(pathString.Length + 1) + "</a></li>";
+                html += "<li><a href=\"." + file.Substring(root.Length).Replace("\\", "/") + "\">" + file.Substring(pathString.Length) + "</a></li>";
             }
 
             /*if (html.Length == 4)

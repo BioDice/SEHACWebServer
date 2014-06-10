@@ -14,20 +14,22 @@ namespace SeHacWebServer
 {
     public abstract class Server
     {
-        protected int port;
+        
         private bool is_active = true;
         private TcpListener listener;
-        public SettingsModel settings { get; set; }
         private Thread thread;
+        public SettingsModel settings { get; set; }
+        protected int port;
+        protected Semaphore m_ServerSemaphore;
         protected string serverName { get; set; }
         protected Router router { get; set; }
-        protected Semaphore m_ServerSemaphore;
-        protected string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
+        protected ErrorPageHandler errorHandler { get; set; }
 
         public Server(int port)
         {
             this.port = port;
             m_ServerSemaphore = new Semaphore(20,20);
+            errorHandler = new ErrorPageHandler();
         }
 
         public void StartServer()
@@ -47,7 +49,7 @@ namespace SeHacWebServer
                 TcpClient client = listener.AcceptTcpClient();
 
                 m_ServerSemaphore.WaitOne();
-                Stream stream = GetStream(client); // http stream
+                Stream stream = GetStream(client);
                 String ip = ((IPEndPoint)client.Client.RemoteEndPoint).Address.ToString();
                 RequestHandler newRequest = new RequestHandler(ip,this, stream);
                 Thread Thread = new Thread(new ThreadStart(newRequest.Process));
@@ -62,15 +64,28 @@ namespace SeHacWebServer
             thread.Abort();
         }
 
-        public abstract Stream GetStream(TcpClient client);
+        protected abstract Stream GetStream(TcpClient client);
 
         public abstract void handleGETRequest(RequestHandler p, string url);
         public abstract void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url);
 
-        public Dictionary<string, string> ParsePostData(StreamReader inputData)
+        protected Dictionary<string, string> ParsePostData(StreamReader inputData)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
             string[] str = inputData.ReadLine().Split('&');
+            for (int i = 0; i < str.Length; i++)
+            {
+                string[] temp = str[i].Split('=');
+                data.Add(temp[0], temp[1]);
+            }
+            return data;
+        }
+
+        protected Dictionary<string, string> ParseGetData(string url)
+        {
+            Dictionary<string, string> data = new Dictionary<string, string>();
+            string[] tempo = url.Split('?');
+            string[] str = tempo[1].Split('&');
             for (int i = 0; i < str.Length; i++)
             {
                 string[] temp = str[i].Split('=');

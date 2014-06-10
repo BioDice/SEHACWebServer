@@ -22,7 +22,7 @@ namespace SeHacWebServer.Model
             ajaxCalls.Add("/postLogin","LoginValues");
         }
 
-        public override string CheckRoutes(string url)
+        public override string CheckRoutes(string url, Stream stream)
         {
             if (url.Equals("/"))
             {

@@ -17,7 +17,7 @@ namespace SeHacWebServer.Model
             this.server = server;
         }
 
-        public abstract string CheckRoutes(string url);
+        public abstract string CheckRoutes(string url, Stream stream);
         // deze methode moet weg zodra er een visitor is gemaakt
         public virtual string CheckAjaxRoutes(string url)
         {
