@@ -42,23 +42,15 @@ namespace SeHacWebServer.Database
             }
         }
 
-        public static bool SessionExists(String user)
+        public static bool SessionExists(String sessionid)
         {
-            //string constr = Settings.Default.UserDbConnectionString;
-            //SqlConnection con = new SqlConnection(constr);
-            //SqlCommand command = new SqlCommand();
-            //command.Connection = con;
-            //command.CommandText = "SELECT Id FROM Session Where Name = @UserName";
-            //command.CommandType = CommandType.Text;
-            //command.Parameters.AddWithValue(@"UserName", user);
-            //con.Open();
-            //int userId = Convert.ToInt32(command.ExecuteScalar().ToString());
-            //con.Close();
-            return false;
+            string _cookies = sessionid.Split(new char[] { '=', ',' })[1];
+            return sessionList.Exists(x => x.SessionId == _cookies);
         }
 
         public static string getSessionId(String user)
         {
+            
             return sessionList.Find(x=>x.User == user).SessionId;
         }
 
