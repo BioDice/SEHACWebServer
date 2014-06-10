@@ -60,11 +60,11 @@ namespace SeHacWebServer
 
         public override void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url)
         {
+            string bs = "";
+            p.requestHeader.Headers.TryGetValue("Cookie", out bs);
             // handle ajax calls
             if (router.CheckAjaxRoutes(url) != null)
             {
-                string bs = "";
-                p.requestHeader.Headers.TryGetValue("Cookie", out bs);
                 switch (router.CheckAjaxRoutes(url))
                 {
                     case "FormValues":
@@ -74,7 +74,7 @@ namespace SeHacWebServer
                         }
                         break;
                     case "LogFiles":
-                        if (SessionManager.SessionExists(bs))
+                        if (SessionManager.SessionExists(bs)&&SessionManager.isAdmin(bs))
                         {
                             OpenLogFile(p.stream);
                         }
@@ -82,15 +82,20 @@ namespace SeHacWebServer
                     case "LoginValues":
                         Authenticate(p.stream, inputData);
                         break;
-                    case "AuthenticateRequest":
-                        //derp
-                        break;
                 }
             }
             else
             {
+                if (SessionManager.SessionExists(bs) && SessionManager.isAdmin(bs))
+                {
+                    PostControlForm(p.stream, inputData, url);
+                }
+                else
+                {
+                    string route = router.CheckRoutes(url, p.stream);
+                    WritePost(p.stream, route);
+                }
                 // handle form post
-                PostControlForm(p.stream, inputData, url);
             }
             m_ServerSemaphore.Release();
         }

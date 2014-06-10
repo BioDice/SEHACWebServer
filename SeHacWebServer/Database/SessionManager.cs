@@ -42,6 +42,11 @@ namespace SeHacWebServer.Database
             }
         }
 
+        /// <summary>
+        /// check if the current session token exists
+        /// </summary>
+        /// <param name="sessionid"></param>
+        /// <returns></returns>
         public static bool SessionExists(String sessionid)
         {
             string _cookies = sessionid.Split(new char[] { '=', ',' })[1];
@@ -50,8 +55,18 @@ namespace SeHacWebServer.Database
 
         public static string getSessionId(String user)
         {
-            
             return sessionList.Find(x=>x.User == user).SessionId;
+        }
+
+        /// <summary>
+        /// check if the current session has admin rights
+        /// </summary>
+        /// <param name="sessionid"></param>
+        /// <returns></returns>
+        public static bool isAdmin(String sessionid)
+        {
+            string _cookies = sessionid.Split(new char[] { '=', ',' })[1];
+            return sessionList.Exists(x=>x.Role.Equals("Administrator"));
         }
 
         /// <summary>
