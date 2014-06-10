@@ -102,7 +102,9 @@
     <Compile Include="Visitor\RouteVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Certificate\Certificate.pfx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -123,7 +125,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="XML\extensions.xml" />
+    <Content Include="XML\extensions.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="XML\settings.xml" />
     <Content Include="UserDb.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

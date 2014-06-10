@@ -63,18 +63,25 @@ namespace SeHacWebServer
             // handle ajax calls
             if (router.CheckAjaxRoutes(url) != null)
             {
+                string bs = "";
+                p.requestHeader.Headers.TryGetValue("Cookie", out bs);
                 switch (router.CheckAjaxRoutes(url))
                 {
                     case "FormValues":
-                        GetFormValues(p.stream, url);
+                        if (SessionManager.SessionExists(bs))
+                        {
+                            GetFormValues(p.stream, url);
+                        }
                         break;
                     case "LogFiles":
-                        OpenLogFile(p.stream);
+                        if (SessionManager.SessionExists(bs))
+                        {
+                            OpenLogFile(p.stream);
+                        }
                         break;
                     case "LoginValues":
                         Authenticate(p.stream, inputData);
                         break;
-
                     case "AuthenticateRequest":
                         //derp
                         break;
