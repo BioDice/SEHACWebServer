@@ -1,4 +1,5 @@
 ﻿using SeHacWebServer.Model;
+using SeHacWebServer.XMLModels;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +12,7 @@ namespace SeHacWebServer
 {
     class XMLParser
     {
-        public static void SerializeXML(SettingsModel settings)
+        public static void SerializeSettingsXML(SettingsModel settings)
         {
             XmlSerializer SerializerObj = new XmlSerializer(typeof(SettingsModel));
             string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
@@ -20,12 +21,32 @@ namespace SeHacWebServer
             WriteFileStream.Close();
         }
 
-        public static SettingsModel DeserializeXML()
+        public static SettingsModel DeserializeSettingsXML()
         {
             XmlSerializer SerializerObj = new XmlSerializer(typeof(SettingsModel));
             string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
             FileStream ReadFileStream = new FileStream(root + "/XML/settings.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
             SettingsModel LoadedObj = (SettingsModel)SerializerObj.Deserialize(ReadFileStream);
+            ReadFileStream.Close();
+
+            return LoadedObj;
+        }
+
+        public static void SerializeExtensionsXML(ExtensionsModel settings)
+        {
+            XmlSerializer SerializerObj = new XmlSerializer(typeof(ExtensionsModel));
+            string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
+            TextWriter WriteFileStream = new StreamWriter(root + "/XML/extensions2.xml");
+            SerializerObj.Serialize(WriteFileStream, settings);
+            WriteFileStream.Close();
+        }
+
+        public static ExtensionsModel DeserializeExtensionXML()
+        {
+            XmlSerializer SerializerObj = new XmlSerializer(typeof(ExtensionsModel));
+            string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
+            FileStream ReadFileStream = new FileStream(root + "/XML/extensions.xml", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ExtensionsModel LoadedObj = (ExtensionsModel)SerializerObj.Deserialize(ReadFileStream);
             ReadFileStream.Close();
 
             return LoadedObj;

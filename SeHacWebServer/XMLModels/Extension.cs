@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace SeHacWebServer.Model
 {
     [Serializable]
-    [XmlRoot("extension")]
+    //[XmlElement("extension")]
     public class Extension
     {
         [XmlAttribute("ext")]
@@ -16,10 +16,10 @@ namespace SeHacWebServer.Model
         [XmlAttribute("content")]
         public string content { get; set; }
 
-        public Extension(string ext, string content)
+        public Extension()
         {
-            this.ext = ext;
-            this.content = content;
+            this.ext = "1";
+            this.content = "2";
         }
     }
 }

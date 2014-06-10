@@ -16,16 +16,14 @@ namespace SeHacWebServer
     public class RequestHandler
     {
         public Server srv;
-        private Stopwatch requestTimer;
         public Stream stream;
-        //public StreamWriter outputStream;
-
         public String http_method { get; set; }
         public String http_url { get; set; }
         public String http_protocol_versionstring { get; set; }
         public String http_host { get; set; }
         public String http_clientIp { get; set; }
         public RequestHeader requestHeader { get; set; }
+        private Stopwatch requestTimer;
         private static int MAX_POST_SIZE = 10 * 1024 * 1024;
 
         public RequestHandler(String ip,Server server, Stream stream)
@@ -125,7 +123,6 @@ namespace SeHacWebServer
         private const int BUF_SIZE = 4096;
         public void handlePOSTRequest()
         {
-            Console.WriteLine("get post data start");
             int content_len = 0;
             MemoryStream ms = new MemoryStream();
             if (this.requestHeader.Headers.ContainsKey("Content-Length"))
@@ -148,20 +145,15 @@ namespace SeHacWebServer
                     if (numread == 0)
                     {
                         if (to_read == 0)
-                        {
                             break;
-                        }
                         else
-                        {
                             throw new Exception("client disconnected during post");
-                        }
                     }
                     to_read -= numread;
                     ms.Write(buf, 0, numread);
                 }
                 ms.Seek(0, SeekOrigin.Begin);
             }
-            Console.WriteLine("get post data end");
             srv.handlePOSTRequest(this, new StreamReader(ms), http_url);
         }
 
