@@ -29,7 +29,7 @@ namespace SeHacWebServer.Model
             string Cookies = "";
             r.requestHeader.Headers.TryGetValue("Cookie", out Cookies);
 
-            if (SessionManager.SessionExists(Cookies))
+            if (SessionManager.SessionExists(Cookies,r.http_clientIp))
             {
                 if (url.Equals("/"))
                 {

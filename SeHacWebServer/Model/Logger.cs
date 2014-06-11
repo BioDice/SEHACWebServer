@@ -48,11 +48,9 @@ namespace SeHacWebServer
                     {
                         m_loggerQueue = swap();
                         m_loggerSemaphore.Release();
-                        //writelineAsync omdat er meerdere threads tegelijk loggen mss nog veranderen
-                        //TEST URL
                         using (StreamWriter sw = File.AppendText(root + @"\Logfiles\ControlServer.log.txt"))
                         {
-                            sw.WriteLineAsync(logline);
+                            sw.WriteLine(logline);
                         }
                     }
                 }
