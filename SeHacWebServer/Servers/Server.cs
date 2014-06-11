@@ -1,4 +1,5 @@
-﻿using SeHacWebServer.Model;
+﻿using Microsoft.Security.Application;
+using SeHacWebServer.Model;
 using SeHacWebServer.XMLModels;
 using System;
 using System.Collections.Generic;
@@ -80,7 +81,9 @@ namespace SeHacWebServer
             for (int i = 0; i < str.Length; i++)
             {
                 string[] temp = str[i].Split('=');
-                data.Add(temp[0], temp[1]);
+                string postValue = System.Net.WebUtility.UrlDecode(temp[1]);
+                data.Add(temp[0], System.Net.WebUtility.HtmlEncode(postValue));
+                
             }
             return data;
         }
@@ -93,7 +96,8 @@ namespace SeHacWebServer
             for (int i = 0; i < str.Length; i++)
             {
                 string[] temp = str[i].Split('=');
-                data.Add(temp[0], temp[1]);
+                string postValue = System.Net.WebUtility.UrlDecode(temp[1]);
+                data.Add(temp[0], System.Net.WebUtility.HtmlEncode(postValue));
             }
             return data;
         }

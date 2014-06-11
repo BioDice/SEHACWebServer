@@ -57,6 +57,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel.Web" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -133,7 +134,9 @@
     <Content Include="XML\extensions.xml">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="XML\settings.xml" />
+    <Content Include="XML\settings.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="UserDb.mdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

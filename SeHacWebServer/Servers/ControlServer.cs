@@ -31,7 +31,8 @@ namespace SeHacWebServer
             try
             {
                 string route = router.CheckRoutes(url, p);
-                WritePost(p.stream, route);
+                if (route != null)
+                    WritePost(p.stream, route);
             }
             catch (IOException ex)
             {

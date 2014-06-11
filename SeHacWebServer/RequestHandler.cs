@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Microsoft.Security.Application;
 
 namespace SeHacWebServer
 {
@@ -154,6 +155,14 @@ namespace SeHacWebServer
                 }
                 ms.Seek(0, SeekOrigin.Begin);
             }
+            /*String line;
+            using (StreamReader sr = new StreamReader(ms))
+            {
+                while ((line = sr.ReadLine())!=null)
+                {
+                    line = System.Net.WebUtility.UrlDecode(line);
+                }
+            }*/
             srv.handlePOSTRequest(this, new StreamReader(ms), http_url);
         }
 

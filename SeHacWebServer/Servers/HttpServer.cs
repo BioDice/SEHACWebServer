@@ -32,7 +32,7 @@ namespace SeHacWebServer
                         byte[] bytes = WritePost(data, path.Split('?')[0], p.stream);
                         string extension = GetFileExtensionFromString(path);
                         header.SetHeader("ContentLength", bytes.Length.ToString());
-                        header.SetHeader("ContentType", ext.extensions.Where(x => x.ext == extension).FirstOrDefault().content);
+                        header.SetHeader("ContentType", ext.extensions.Where(x => x.ext == extension).FirstOrDefault().content + "; charset=UTF-8 ");
                         SendContentHandler.SendHeader(header, p.stream);
                         SendContentHandler.SendContent(bytes, p.stream);
                     }
@@ -57,7 +57,7 @@ namespace SeHacWebServer
             byte[] bytes = WritePost(data, path, p.stream);
             string extension = GetFileExtensionFromString(url);
             header.SetHeader("ContentLength", bytes.Length.ToString());
-            header.SetHeader("ContentType", ext.extensions.Where(x => x.ext == extension).FirstOrDefault().content);
+            header.SetHeader("ContentType", ext.extensions.Where(x => x.ext == extension).FirstOrDefault().content + "; charset=UTF-8 ");
             SendContentHandler.SendHeader(header, p.stream);
             SendContentHandler.SendContent(bytes, p.stream);
             m_ServerSemaphore.Release();
@@ -98,7 +98,7 @@ namespace SeHacWebServer
             {
                 string extension = Path.GetExtension(file.Name).Replace(".", "");
                 header.SetHeader("ContentLength", file.Length.ToString());
-                header.SetHeader("ContentType", ext.extensions.Where(x => x.ext == extension).FirstOrDefault().content);
+                header.SetHeader("ContentType", ext.extensions.Where(x => x.ext == extension).FirstOrDefault().content + "; charset=UTF-8 ");
                 SendContentHandler.SendHeader(header, stream);
                 int bytesRead;
                 var buffer = new byte[chunkSize];

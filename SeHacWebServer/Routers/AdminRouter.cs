@@ -44,7 +44,7 @@ namespace SeHacWebServer.Model
                     server.errorHandler.SendErrorPage(r.stream, 404);
                 }
             }
-            else if(url.Equals("/") || url.Equals("/login.html"))
+            else if (url.Equals("/") || url.Equals("/login.html") || url.Equals("/main.html"))
             {
                 return root + @"/controlserver_files/login.html";
             }
