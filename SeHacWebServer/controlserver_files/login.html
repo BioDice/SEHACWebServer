@@ -12,12 +12,12 @@
 	{
 		var now = new Date();
 		var time = now.getTime();
-		time += 3600 * 1000;
+		time += 1 * 60 * 1000;
 		now.setTime(time);
 		document.cookie = 
 			'SessionID=' + value + 
-			', expires=' + now.toGMTString() + 
-			', path=/';
+			'; expires=' + now.toGMTString() + 
+			'; path=/';
 			
 	}
 

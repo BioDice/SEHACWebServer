@@ -29,7 +29,7 @@ namespace SeHacWebServer.Model
             string Cookies = "";
             r.requestHeader.Headers.TryGetValue("Cookie", out Cookies);
 
-            if (SessionManager.SessionExists(Cookies))
+            if (SessionManager.SessionExists(Cookies,r.http_clientIp))
             {
                 if (url.Equals("/"))
                 {
@@ -44,7 +44,7 @@ namespace SeHacWebServer.Model
                     server.errorHandler.SendErrorPage(r.stream, 404);
                 }
             }
-            else if(url.Equals("/") || url.Equals("/login.html"))
+            else if (url.Equals("/") || url.Equals("/login.html") || url.Equals("/main.html"))
             {
                 return root + @"/controlserver_files/login.html";
             }

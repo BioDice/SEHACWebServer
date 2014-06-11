@@ -68,19 +68,19 @@ namespace SeHacWebServer
                 switch (router.CheckAjaxRoutes(url))
                 {
                     case "FormValues":
-                        if (SessionManager.SessionExists(bs))
+                        if (SessionManager.SessionExists(bs,p.http_clientIp))
                         {
                             GetFormValues(p.stream, url);
                         }
                         break;
                     case "LogFiles":
-                        if (SessionManager.SessionExists(bs)&&SessionManager.isAdmin(bs))
+                        if (SessionManager.SessionExists(bs,p.http_clientIp)&&SessionManager.isAdmin(bs))
                         {
                             OpenLogFile(p.stream);
                         }
                         break;
                     case "LoginValues":
-                        Authenticate(p.stream, inputData);
+                        Authenticate(p, inputData);
                         break;
                     case "LogoutValues":
                         doLogout(p.stream,inputData);
@@ -89,7 +89,7 @@ namespace SeHacWebServer
             }
             else
             {
-                if (SessionManager.SessionExists(bs) && SessionManager.isAdmin(bs))
+                if (SessionManager.SessionExists(bs,p.http_clientIp) && SessionManager.isAdmin(bs))
                 {
                     PostControlForm(p, inputData, url);
                 }
@@ -104,17 +104,17 @@ namespace SeHacWebServer
         }
 
         /// <param name="inputData">User en Password van form</param>
-        public void Authenticate(Stream stream, StreamReader inputData)
+        public void Authenticate(RequestHandler r, StreamReader inputData)
         {
             Dictionary<string, string> data = ParsePostData(inputData);
             string user = data.ElementAt(0).Value;
             if (UserAuthentication.Authenticate(user, data.ElementAt(1).Value))
             {
-                SessionManager.addSession(user);
-                GetLoginAuthentication(stream, true, user);
+                SessionManager.addSession(user,r.http_clientIp);
+                GetLoginAuthentication(r.stream, true, user);
             }
             else
-                GetLoginAuthentication(stream, false, user);
+                GetLoginAuthentication(r.stream, false, user);
         }
 
         public void doLogout(Stream stream,StreamReader inputData)
@@ -146,10 +146,13 @@ namespace SeHacWebServer
             SettingsModel settings = new SettingsModel();
             foreach (KeyValuePair<string, string> entry in dict)
             {
+                if (!new Regex(@"^\w+$").IsMatch(entry.Value)) return;
                 switch (entry.Key)
                 {
                     case "controlPort":
-                        settings.controlPort = int.Parse(entry.Value);
+                        int cport = 0;
+                        if (!int.TryParse(entry.Value, out cport)) return;
+                        settings.controlPort = cport;
                         break;
                     case "defaultPage":
                         settings.defaultPage = entry.Value;
@@ -158,7 +161,9 @@ namespace SeHacWebServer
                         settings.dirListing = entry.Value == "on" ? settings.dirListing = "true" : settings.dirListing = "false";
                         break;
                     case "webPort":
-                        settings.webPort = int.Parse(entry.Value);
+                        int wport = 0;
+                        if (!int.TryParse(entry.Value, out wport)) return;
+                        settings.webPort = wport;
                         break;
                     case "webRoot":
                         settings.webRoot = System.Net.WebUtility.UrlDecode(entry.Value);
@@ -215,7 +220,6 @@ namespace SeHacWebServer
             {
                 string sessionId = SessionManager.getSessionId(user);
                 json = jSerializer.Serialize(new { Authentication = authentication, SessionID = sessionId });
-
             }
             else
                 json = jSerializer.Serialize(new { Authentication = authentication });

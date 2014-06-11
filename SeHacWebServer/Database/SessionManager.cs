@@ -42,18 +42,17 @@ namespace SeHacWebServer.Database
             }
         }
 
-
         /// <summary>
         /// check if the current session token exists
         /// </summary>
         /// <param name="sessionid"></param>
         /// <returns></returns>
-        public static bool SessionExists(String sessionid)
+        public static bool SessionExists(String sessionid,String clientIp)
         {
             if (sessionid != null)
             {
-                string _cookies = sessionid.Split(new char[] { '=', ',' })[1];
-                return sessionList.Exists(x => x.SessionId == _cookies);
+                string _cookies = sessionid.Split(new char[] { '=', ';' })[1];
+                return sessionList.Exists(x => x.SessionId == _cookies && x.ClientIp == clientIp);
             }
             return false;
         }
@@ -79,8 +78,17 @@ namespace SeHacWebServer.Database
         /// <param name="sessionId">the session id from the cookie</param>
         public static void deleteSession(String sessionId)
         {
-            string _cookies = sessionId.Split(new char[] { '=', ',' })[1];
+            string _cookies = sessionId.Split(new char[] { '=', ';' })[1];
             sessionList.RemoveAll(x=>x.SessionId.Equals(sessionId));
+        }
+
+        /// <summary>
+        /// Dat pro code
+        /// </summary>
+        /// <param name="sessionId">the session id from the cookie</param>
+        public static void deleteSession(Session s)
+        {
+            sessionList.RemoveAll(x => x.Equals(s));
         }
 
         /// <summary>
@@ -90,7 +98,7 @@ namespace SeHacWebServer.Database
         /// <returns></returns>
         public static bool isAdmin(String sessionid)
         {
-            string _cookies = sessionid.Split(new char[] { '=', ',' })[1];
+            string _cookies = sessionid.Split(new char[] { '=', ';' })[1];
             return sessionList.Exists(x=>x.Role.Equals("Administrator"));
         }
 
@@ -98,7 +106,7 @@ namespace SeHacWebServer.Database
         /// OWASP TOP 10 - A1 - Geen SQL injection door het gebruik van parameters en een whitelist
         /// </summary>
         /// <param name="user"></param>
-        public static string addSession(String user)
+        public static string addSession(String user,String clientip)
         {
             var positiveIntRegex = new Regex(@"^\w+$");
             if (!positiveIntRegex.IsMatch(user))
@@ -119,7 +127,7 @@ namespace SeHacWebServer.Database
             if (command.ExecuteScalar() != null)
                 type = command.ExecuteScalar().ToString();
             con.Close();
-            Session s = new Session(generateSessionId(),type,user);
+            Session s = new Session(generateSessionId(),type,user,clientip);
             sessionList.Add(s);
 
             return s.SessionId;
