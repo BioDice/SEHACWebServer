@@ -25,8 +25,10 @@ namespace SeHacWebServer
                 string path = router.CheckRoutes(url, p);
                 if (path != null)
                 {
+                    // check if it has parameters from get post
                     if (path.Contains('?'))
                     {
+                        // parses the get values
                         Header header = new ResponseHeader();
                         Dictionary<string, string> data = ParseGetData(url);
                         byte[] bytes = WritePost(data, path.Split('?')[0], p.stream);
@@ -50,9 +52,9 @@ namespace SeHacWebServer
 
         public override void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url) 
         {
+            // parses the post data form the request
             Header header = new ResponseHeader();
             string path = router.CheckRoutes(url, p);
-            //Console.WriteLine("POST request: {0}", p.http_url);
             Dictionary<string, string> data = ParsePostData(inputData);
             byte[] bytes = WritePost(data, path, p.stream);
             string extension = GetFileExtensionFromString(url);
