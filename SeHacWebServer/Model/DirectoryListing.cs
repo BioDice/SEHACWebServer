@@ -9,6 +9,12 @@ namespace SeHacWebServer.Model
 {
     class DirectoryListing
     {
+        /// <summary>
+        /// Generates the directory listing  
+        /// </summary>
+        /// <param name="pathString"></param>
+        /// <param name="root"></param>
+        /// <returns></returns>
         public static String Generate(String pathString, string root)
         {
             String html = "<html><head><title>Directory list</title></head><body><ul>";
@@ -19,13 +25,11 @@ namespace SeHacWebServer.Model
             for (int i = 0; i < dirList.Length; i++)
             {
                 String dir = @dirList[i];
-                //if (str.
                 html += "<li><a href=\"" + dir.Substring(root.Length).Replace("\\", "/") + "\">" + dir.Substring(pathString.Length).Replace("\\","") + "</a></li>";
             }
             for (int i = 0; i < fileList.Length; i++)
             {
                 String file = fileList[i];
-
                 html += "<li><a href=\"" + file.Substring(root.Length).Replace("\\", "/") + "\">" + file.Substring(pathString.Length).Replace("\\", "") + "</a></li>";
             }
 

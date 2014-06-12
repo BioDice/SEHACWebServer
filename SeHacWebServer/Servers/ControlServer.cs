@@ -26,6 +26,11 @@ namespace SeHacWebServer
             router = new AdminRouter(this);
         }
 
+        /// <summary>
+        /// Handles the Get Request  and releases thread when done
+        /// </summary>
+        /// <param name="p">The current RequestHandler</param>
+        /// <param name="url">Given Get url</param>
         public override void handleGETRequest(RequestHandler p, string url)
         {
             try
@@ -37,11 +42,15 @@ namespace SeHacWebServer
             catch (IOException ex)
             {
                 Console.WriteLine("File not Found");
-                //Send404(p);
             }
             m_ServerSemaphore.Release();
         }
 
+        /// <summary>
+        /// Gets the SSL stream from the connected client
+        /// </summary>
+        /// <param name="client">Connected client</param>
+        /// <returns>stream from client</returns>
         protected override Stream GetStream(TcpClient client)
         {
             SslStream stream = null;
@@ -59,6 +68,12 @@ namespace SeHacWebServer
             return stream;
         }
 
+        /// <summary>
+        /// Handles the post request
+        /// </summary>
+        /// <param name="p">Current RequestHandler</param>
+        /// <param name="inputData"></param>
+        /// <param name="url"></param>
         public override void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url)
         {
             string bs = "";

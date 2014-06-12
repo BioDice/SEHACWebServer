@@ -43,6 +43,9 @@ namespace SeHacWebServer
             thread.Start();
         }
 
+        /// <summary>
+        /// Listens for incoming connections
+        /// </summary>
         public void Listen()
         {
             listener = new TcpListener(IPAddress.Parse("127.0.0.1"), port);
@@ -74,6 +77,11 @@ namespace SeHacWebServer
         public abstract void handleGETRequest(RequestHandler p, string url);
         public abstract void handlePOSTRequest(RequestHandler p, StreamReader inputData, string url);
 
+        /// <summary>
+        /// Parses the post data
+        /// </summary>
+        /// <param name="inputData">input stream from Post request</param>
+        /// <returns>dictionary containing the Post values</returns>
         protected Dictionary<string, string> ParsePostData(StreamReader inputData)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();
@@ -88,6 +96,11 @@ namespace SeHacWebServer
             return data;
         }
 
+        /// <summary>
+        /// Parses the Get data
+        /// </summary>
+        /// <param name="url">parameters from URL</param>
+        /// <returns>dictionary containing Get values</returns>
         protected Dictionary<string, string> ParseGetData(string url)
         {
             Dictionary<string, string> data = new Dictionary<string, string>();

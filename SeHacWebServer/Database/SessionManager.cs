@@ -78,7 +78,6 @@ namespace SeHacWebServer.Database
         /// <param name="sessionId">the session id from the cookie</param>
         public static void deleteSession(String sessionId)
         {
-            string _cookies = sessionId.Split(new char[] { '=', ';' })[1];
             sessionList.RemoveAll(x=>x.SessionId.Equals(sessionId));
         }
 
