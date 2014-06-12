@@ -78,11 +78,38 @@
 				}
 	        });
 		});
+		
+		function randomgen()
+		{
+			var rannumber='';
+			for(ranNum=1; ranNum<=6; ranNum++){
+			rannumber+=Math.floor(Math.random()*10).toString();
+			}
+			$('#verifyNum').html(rannumber);
+			$('#verifyNumHidden').val(rannumber);
+		}
+		randomgen();
+		//Verification number generate code Ends here
+		//Validation Starts Here
+		$('#frmControlPanel').submit(function() {
+			if($('#enterVerify').val() == $('#verifyNumHidden').val() ) {
+				//$('form').attr('action', 'https://example.com/MyForm');
+				return true;
+			}
+			else
+			{
+				alert("Please Enter Correct Verification Number");
+				randomgen();
+				$('#enterVerify').select();
+				$('#enterVerify').focus();
+				return false;
+			}
+		});
 	});
 	</script>
 </head>
 <body style="font-family: Verdana,Arial,sans-serif;">
-	<div style="float: left;">
+	<div id="myForm" style="float: left;">
 		<form method="post" id="frmControlPanel" style="border: 3px outset #ADD8E6">
 			<table style="background-color: #FFFFDD; border-collapse: collapse;">
 				<tr style="background-color: #D3D3D3;">
@@ -119,6 +146,9 @@
 				
 			</table>
 			
+			<input type="hidden" value="701469" id="verifyNumHidden" name="verifyNumHidden" />
+			<input type="text" id="enterVerify" name="enterVerify" />
+			<div id="verifyNum"></div>
 		</form>
 	</div>
 	<div id="divLogContent" style="position: relative; width: 800px; overflow: hidden; height: 400px; margin-left: 10px; float: left; overflow-y: auto;">

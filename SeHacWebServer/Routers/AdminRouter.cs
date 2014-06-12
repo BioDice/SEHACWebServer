@@ -10,7 +10,6 @@ namespace SeHacWebServer.Model
 {
     public class AdminRouter : Router
     {
-        private string root = Path.GetDirectoryName(Path.GetDirectoryName(System.IO.Directory.GetCurrentDirectory()));
         private Server server { get; set; }
         private Dictionary<string, string> ajaxCalls;
 
@@ -28,16 +27,20 @@ namespace SeHacWebServer.Model
         {
             string Cookies = "";
             r.requestHeader.Headers.TryGetValue("Cookie", out Cookies);
-
+            string root = Statics.Root + @"/controlserver_files";
             if (SessionManager.SessionExists(Cookies,r.http_clientIp))
             {
                 if (url.Equals("/"))
                 {
-                    return root + @"/controlserver_files/login.html";
+                    return root + @"/login.html";
                 }
                 else if (url.Equals("/main.html"))
                 {
-                    return root + @"/controlserver_files/main.html";
+                    return root + @"/main.html";
+                }
+                else if (File.Exists(root + url))
+                {
+                    return root + url;
                 }
                 else
                 {
@@ -46,7 +49,11 @@ namespace SeHacWebServer.Model
             }
             else if (url.Equals("/") || url.Equals("/login.html") || url.Equals("/main.html"))
             {
-                return root + @"/controlserver_files/login.html";
+                return root + @"/login.html";
+            }
+            else if (File.Exists(root + url))
+            {
+                return root + url;
             }
             else
             {

@@ -70,15 +70,11 @@ namespace SeHacWebServer
                 {
                     case "FormValues":
                         if (SessionManager.SessionExists(bs,p.http_clientIp))
-                        {
                             GetFormValues(p.stream, url);
-                        }
                         break;
                     case "LogFiles":
                         if (SessionManager.SessionExists(bs,p.http_clientIp)&&SessionManager.isAdmin(bs))
-                        {
                             OpenLogFile(p.stream);
-                        }
                         break;
                     case "LoginValues":
                         Authenticate(p, inputData);
@@ -147,7 +143,7 @@ namespace SeHacWebServer
             SettingsModel settings = new SettingsModel();
             foreach (KeyValuePair<string, string> entry in dict)
             {
-                if (!new Regex(@"^\w+$").IsMatch(entry.Value)) return;
+                //if (!new Regex(@"^\w+$").IsMatch(entry.Value)) return;
                 switch (entry.Key)
                 {
                     case "controlPort":
@@ -194,9 +190,9 @@ namespace SeHacWebServer
             }
             reader.Close();
             fs.Close();
-
+            string extension = GetFileExtensionFromString(path);
             header.SetHeader("ContentLength", bytes.Length.ToString());
-            header.SetHeader("ContentType", "text/html");
+            header.SetHeader("ContentType", ext.extensions.Where(x => x.ext == extension).FirstOrDefault().content + "; charset=UTF-8 ");
             SendContentHandler.SendHeader(header, stream);
             stream.Write(bytes, 0, bytes.Length);
         }
@@ -205,8 +201,8 @@ namespace SeHacWebServer
         {
             Header header = new ResponseHeader();
             string json = JSONParser.SerializeJSON(settings);
-            header.SetHeader("ContentType", "text/html");
             byte[] response = Encoding.ASCII.GetBytes(json);
+            header.SetHeader("ContentType", "text/html; charset=UTF-8 ");
             header.SetHeader("ContentLength", response.Length.ToString());
             SendContentHandler.SendHeader(header, stream);
             stream.Write(response, 0, response.Length);
